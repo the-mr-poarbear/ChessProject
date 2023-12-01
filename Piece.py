@@ -1,8 +1,9 @@
 
 
+
 class Piece:
     
-    def __init__(self , tag ) :
+    def __init__(self , tag , color ) :
         pass
 
     def Move(self ) :
