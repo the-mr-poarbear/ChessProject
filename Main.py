@@ -72,7 +72,7 @@ rook_B_img = pygame.transform.scale(rook_B_img , (60,60) )
     
     
 #white pieces initializeation   
-queen_W = Piece("queen" , "white" , queen_W_img ,[8 , 5] , True)
+queen_W = Piece("queen" , "white" , queen_W_img ,[5 , 5] , True)
     
 king_W = Piece("king" , "white" , king_W_img ,[8 , 4]) 
     
@@ -85,33 +85,44 @@ knight_WR = Piece("knight" , "white" , knight_W_img ,[8 , 7])
 rook_WL = Piece("rook" , "white" , rook_W_img ,[8 , 1] , True)
 rook_WR = Piece("rook" , "white" , rook_W_img ,[8 , 8] , True)
     
-pawn_W = []
-for i in range(8) :       
-    pawn_W.append(Piece("pawn" , "white" , pawn_W_img ,[7 , i+1]))
+pawn_W1 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 1])
+pawn_W2 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 2])
+pawn_W3 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 3])
+pawn_W4 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 4])
+pawn_W5 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 5])
+pawn_W6 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 6])
+pawn_W7 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 7])
+pawn_W8 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 8])
+
+
     
 
-whitePieces = [queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W , rook_WL , rook_WR ]
+whitePieces = [queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W1 ,pawn_W2,pawn_W3,pawn_W4,pawn_W5,pawn_W6,pawn_W7,pawn_W8 , rook_WL , rook_WR ]
   
 #black pieces initializeation   
-queen_B = Piece("queen" , "white" , queen_B_img ,[1 , 5])
+queen_B = Piece("queen" , "black" , queen_B_img ,[1 , 5] , True)
     
-king_B = Piece("king" , "white" , king_B_img ,[1 , 4]) 
+king_B = Piece("king" , "black" , king_B_img ,[1 , 4]) 
     
-bishop_BL = Piece("bishop" , "white" , bishop_B_img ,[1 , 3])
-bishop_BR = Piece("bishop" , "white" , bishop_B_img ,[1 , 6])
+bishop_BL = Piece("bishop" , "black" , bishop_B_img ,[1 , 3], True)
+bishop_BR = Piece("bishop" , "black" , bishop_B_img ,[1 , 6], True)
     
-knight_BL = Piece("knight" , "white" , knight_B_img ,[1 , 2])
-knight_BR = Piece("knight" , "white" , knight_B_img ,[1 , 7])
+knight_BL = Piece("knight" , "black" , knight_B_img ,[1 , 2])
+knight_BR = Piece("knight" , "black" , knight_B_img ,[1 , 7])
     
-rook_BL = Piece("rook" , "white" , rook_B_img ,[1 , 1])
-rook_BR = Piece("rook" , "white" , rook_B_img ,[1 , 8])
+rook_BL = Piece("rook" , "black" , rook_B_img ,[1 , 1], True)
+rook_BR = Piece("rook" , "black" , rook_B_img ,[1 , 8], True)
     
-pawn_B = []
-for i in range(8) :       
-    pawn_B.append(Piece("pawn" , "white" , pawn_B_img ,[2 , i+1]))
-    
+pawn_B1 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 1])
+pawn_B2 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 2])
+pawn_B3 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 3])
+pawn_B4 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 4])
+pawn_B5 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 5])
+pawn_B6 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 6])
+pawn_B7 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 7])
+pawn_B8 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 8])
 
-blackPieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL , pawn_B , rook_BL , rook_BR ]
+blackPieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL , pawn_B1,pawn_B2,pawn_B3,pawn_B4,pawn_B5,pawn_B6,pawn_B7,pawn_B8 , rook_BL , rook_BR ]
   
     
 
@@ -125,25 +136,15 @@ fps = 60
     
 run = True 
 
-Board.pieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL , pawn_B , rook_BL , rook_BR ,
-                queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W , rook_WL , rook_WR ]
-def DrawPieces():
-        
-    for piece in whitePieces : 
-        if type(piece) != type(pawn_W) :
+Board.pieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL , pawn_B1,pawn_B2,pawn_B3,pawn_B4,pawn_B5,pawn_B6,pawn_B7,pawn_B8 , rook_BL , rook_BR  ,
+                queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W1 ,pawn_W2,pawn_W3,pawn_W4,pawn_W5,pawn_W6,pawn_W7,pawn_W8 , rook_WL , rook_WR  ]
+def DrawPieces():      
+    for piece in Board.pieces :   
             piece.Draw()
-        else :
-            for i in piece :
-                i.Draw()
-                pass
-                
-    for piece in blackPieces : 
-        if type(piece) != type(pawn_B) :
-            piece.Draw()
-        else :
-            for i in piece :
-                i.Draw()
+      
+       
 #run loop 
+turn = "white" 
 while run : 
     timer.tick(fps)
         
@@ -156,12 +157,47 @@ while run :
              #print(pygame.mouse.get_pos[0]) 
             # (x,y) = 
              rowCol = Board.getRowColOnGivenPosition(pygame.mouse.get_pos()[0] , pygame.mouse.get_pos()[1] )
-             print(rowCol)
              piece = Board.getPieceOnGivenSquare(rowCol[0] , rowCol[1])
-             while(True) :
-                 print("hi")
-                 piece.MovementSelection()
-                 pygame.display.flip()
+             
+             if piece is None :
+                print("agn")
+                for targetPiece in Board.pieces  :
+                     if targetPiece.selected :
+                        for validMove in targetPiece.validMoves :
+                            if validMove == rowCol :
+                                print("hi") 
+                                targetPiece.Move(rowCol)
+                                targetPiece.selected = False
+                                if turn == "black" :
+                                    turn = "white"
+                                else :
+                                    turn = "black"
+             elif not piece.selected and turn == piece.color :   
+                print("notagn")
+                for tPiece in Board.pieces :
+                      tPiece.selected = False  
+                piece.selected = True 
+                
+             elif not piece.selected and turn != piece.color :   
+                  for targetPiece in Board.pieces  :
+                     if targetPiece.selected :
+                        for validMove in targetPiece.validMoves :
+                            if validMove == rowCol :
+                                print("bye") 
+                                targetPiece.Move(rowCol)
+                                piece.Delete()                           
+                                targetPiece.selected = False 
+                                if turn == "white" :
+                                    turn = "black"
+                                else :
+                                    turn = "white"
+             else : 
+                piece.selected = False
+          
+             
+             
+             
+            
     #print(pygame.mouse.get_pos())       
     pygame.display.flip()
         

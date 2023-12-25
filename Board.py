@@ -22,12 +22,12 @@ class Board:
         #file is a to h and rank is 1 to 8
         for piece in Board.pieces :
             
-            if type(piece) != type([]) :
-                print(piece.row , row)
-                print(piece.column , column)
-                if piece.row == row and piece.column == column :
-                    return piece
-           
+            
+            #print(piece.row , row)
+            #print(piece.column , column)
+            if piece.row == row and piece.column == column :
+                return piece
+        return None  
     def getPoistionOnGivenSquare(row , column ) :
         positionX = Board.startingPoint[0] + column * Board.sideOfTheSquare - Board.sideOfTheSquare
         positionY = Board.startingPoint[1] + row * Board.sideOfTheSquare - 16*Board.sideOfTheSquare/16
