@@ -1,7 +1,13 @@
 from ast import List
 import pygame
 
-from Board import Board 
+from Board import Board
+from Bishop import Bishop
+from King import King
+from Knight import Knight
+from Pawn import Pawn
+from Queen import Queen
+from Rook import Rook 
 from Piece import Piece 
 import mouse
 
@@ -72,27 +78,27 @@ rook_B_img = pygame.transform.scale(rook_B_img , (60,60) )
     
     
 #white pieces initializeation   
-queen_W = Piece("queen" , "white" , queen_W_img ,[5 , 5] , True)
+queen_W = Queen("queen" , "white" , queen_W_img ,[5 , 5] )
     
-king_W = Piece("king" , "white" , king_W_img ,[8 , 4]) 
+king_W = King("king" , "white" , king_W_img ,[8 , 4]) 
     
-bishop_WL = Piece("bishop" , "white" , bishop_W_img ,[8 , 3] , True)
-bishop_WR = Piece("bishop" , "white" , bishop_W_img ,[8 , 6] , True)
+bishop_WL = Bishop("bishop" , "white" , bishop_W_img ,[8 , 3] )
+bishop_WR = Bishop("bishop" , "white" , bishop_W_img ,[8 , 6] )
     
-knight_WL = Piece("knight" , "white" , knight_W_img ,[8 , 2])
-knight_WR = Piece("knight" , "white" , knight_W_img ,[8 , 7])
+knight_WL = Knight("knight" , "white" , knight_W_img ,[8 , 2])
+knight_WR = Knight("knight" , "white" , knight_W_img ,[8 , 7])
     
-rook_WL = Piece("rook" , "white" , rook_W_img ,[8 , 1] , True)
-rook_WR = Piece("rook" , "white" , rook_W_img ,[8 , 8] , True)
+rook_WL = Rook("rook" , "white" , rook_W_img ,[8 , 1] )
+rook_WR = Rook("rook" , "white" , rook_W_img ,[8 , 8] )
     
-pawn_W1 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 1])
-pawn_W2 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 2])
-pawn_W3 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 3])
-pawn_W4 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 4])
-pawn_W5 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 5])
-pawn_W6 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 6])
-pawn_W7 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 7])
-pawn_W8 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 8])
+pawn_W1 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 1])
+pawn_W2 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 2])
+pawn_W3 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 3])
+pawn_W4 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 4])
+pawn_W5 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 5])
+pawn_W6 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 6])
+pawn_W7 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 7])
+pawn_W8 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 8])
 
 
     
@@ -100,27 +106,27 @@ pawn_W8 =  Piece("pawn" , "white" , pawn_W_img ,[7 , 8])
 whitePieces = [queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W1 ,pawn_W2,pawn_W3,pawn_W4,pawn_W5,pawn_W6,pawn_W7,pawn_W8 , rook_WL , rook_WR ]
   
 #black pieces initializeation   
-queen_B = Piece("queen" , "black" , queen_B_img ,[1 , 5] , True)
+queen_B = Queen("queen" , "black" , queen_B_img ,[1 , 5] )
     
-king_B = Piece("king" , "black" , king_B_img ,[1 , 4]) 
+king_B = King("king" , "black" , king_B_img ,[1 , 4]) 
     
-bishop_BL = Piece("bishop" , "black" , bishop_B_img ,[1 , 3], True)
-bishop_BR = Piece("bishop" , "black" , bishop_B_img ,[1 , 6], True)
+bishop_BL = Bishop("bishop" , "black" , bishop_B_img ,[1 , 3])
+bishop_BR = Bishop("bishop" , "black" , bishop_B_img ,[1 , 6])
     
-knight_BL = Piece("knight" , "black" , knight_B_img ,[1 , 2])
-knight_BR = Piece("knight" , "black" , knight_B_img ,[1 , 7])
+knight_BL = Knight("knight" , "black" , knight_B_img ,[1 , 2])
+knight_BR = Knight("knight" , "black" , knight_B_img ,[1 , 7])
     
-rook_BL = Piece("rook" , "black" , rook_B_img ,[1 , 1], True)
-rook_BR = Piece("rook" , "black" , rook_B_img ,[1 , 8], True)
+rook_BL = Rook("rook" , "black" , rook_B_img ,[1 , 1])
+rook_BR = Rook("rook" , "black" , rook_B_img ,[1 , 8])
     
-pawn_B1 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 1])
-pawn_B2 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 2])
-pawn_B3 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 3])
-pawn_B4 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 4])
-pawn_B5 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 5])
-pawn_B6 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 6])
-pawn_B7 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 7])
-pawn_B8 =  Piece("pawn" , "black" , pawn_B_img ,[2 , 8])
+pawn_B1 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 1])
+pawn_B2 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 2])
+pawn_B3 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 3])
+pawn_B4 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 4])
+pawn_B5 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 5])
+pawn_B6 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 6])
+pawn_B7 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 7])
+pawn_B8 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 8])
 
 blackPieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL , pawn_B1,pawn_B2,pawn_B3,pawn_B4,pawn_B5,pawn_B6,pawn_B7,pawn_B8 , rook_BL , rook_BR ]
   
