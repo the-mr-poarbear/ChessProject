@@ -144,7 +144,7 @@ def DrawPieces():
       
        
 #run loop 
-turn = "white" 
+
 while run : 
     timer.tick(fps)
         
@@ -159,38 +159,19 @@ while run :
              rowCol = Board.getRowColOnGivenPosition(pygame.mouse.get_pos()[0] , pygame.mouse.get_pos()[1] )
              piece = Board.getPieceOnGivenSquare(rowCol[0] , rowCol[1])
              
-             if piece is None :
-                print("agn")
-                for targetPiece in Board.pieces  :
-                     if targetPiece.selected :
-                        for validMove in targetPiece.validMoves :
-                            if validMove == rowCol :
-                                print("hi") 
-                                targetPiece.Move(rowCol)
-                                targetPiece.selected = False
-                                if turn == "black" :
-                                    turn = "white"
-                                else :
-                                    turn = "black"
-             elif not piece.selected and turn == piece.color :   
-                print("notagn")
-                for tPiece in Board.pieces :
-                      tPiece.selected = False  
-                piece.selected = True 
+             if piece is None :                
+                targetPiece = Board.selectedPiece 
+                if targetPiece :
+                     targetPiece.Move(rowCol)
+                                          
+             elif not piece.selected and Board.turn == piece.color :   
+                Board.selectPiece(piece)
                 
-             elif not piece.selected and turn != piece.color :   
-                  for targetPiece in Board.pieces  :
-                     if targetPiece.selected :
-                        for validMove in targetPiece.validMoves :
-                            if validMove == rowCol :
-                                print("bye") 
-                                targetPiece.Move(rowCol)
-                                piece.Delete()                           
-                                targetPiece.selected = False 
-                                if turn == "white" :
-                                    turn = "black"
-                                else :
-                                    turn = "white"
+             elif not piece.selected and Board.turn != piece.color : 
+                  targetPiece = Board.selectedPiece                      
+                  if targetPiece :
+                      targetPiece.KillOpponent(piece)          
+                      
              else : 
                 piece.selected = False
           

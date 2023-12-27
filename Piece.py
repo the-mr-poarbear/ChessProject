@@ -82,16 +82,22 @@ class Piece:
              
      
     def Move(self , rowCol) :
-        self.row = rowCol[0]
-        self.column = rowCol[1]    
+        for validMove in self.validMoves :
+             if validMove == rowCol :
+                self.row = rowCol[0]
+                self.column = rowCol[1]  
+                Board.SwitchTurn()
+                self.selected = False
+                
     
     def Delete(self) :
         isDead = True
         print("deleted")
         Board.pieces.remove(self)
         
-        
-   
+
+
+       
     def Patterns(self) :
         if self.tag == "pawn" :  
             if self.color == "black" :
@@ -108,4 +114,13 @@ class Piece:
             self.patterns = [[0,1] , [1,0] , [-1,0] , [0,-1] , [1,1] , [-1,-1] , [1,-1] , [-1,1] ]
         if self.tag == "knight" :
             self.patterns = [[-2,-1] , [-2,1] , [1,-2] , [-1,-2] , [2,-1] , [2,1] , [1,2] , [-1,2] ]
-            
+     
+    def KillOpponent(self, opPiece) :
+        for validMove in self.validMoves :
+                if validMove == [opPiece.row , opPiece.column] :
+                    print("bye") 
+                    self.Move([opPiece.row , opPiece.column])
+                    opPiece.Delete()                           
+                    self.selected = False 
+                    
+                    Board.SwitchTurn

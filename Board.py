@@ -14,6 +14,9 @@ class Board:
     
     screen = pygame.display.set_mode([board.get_width() , board.get_height()])
     pieces = []
+    selectedPiece = None
+    
+    turn = "white"
     def __init__(self) :
         
         pass
@@ -40,3 +43,17 @@ class Board:
         
         return [int(row),int(col)]
 
+    def selectPiece(piece) :
+          print("notagn")
+          for tPiece in Board.pieces :
+                tPiece.selected = False  
+          piece.selected = True 
+          Board.selectedPiece = piece   
+                
+    def SwitchTurn():
+        if Board.turn == "white" :
+            Board.turn = "black"
+        else :
+            Board.turn = "white"
+        Board.selectedPiece = None
+        
