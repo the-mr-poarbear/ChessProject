@@ -22,12 +22,12 @@ class Piece:
     def Draw(self) :
         if not self.isDead :
             if self.selected :
-                self.MovementSelection()
+                self.MovementSelection(True)
             position = Board.getPoistionOnGivenSquare(self.row , self.column)
             screen.blit(self.sprite ,( position[0] , position[1]) )
         
         
-    def MovementSelection(self) :
+    def MovementSelection(self , draw) :
          pass
              
             

@@ -9,7 +9,7 @@ class Knight(Piece):
         self.patterns = [[-2,-1] , [-2,1] , [1,-2] , [-1,-2] , [2,-1] , [2,1] , [1,2] , [-1,2] ]
     
 
-     def MovementSelection(self) :
+     def MovementSelection(self , draw) :
           self.validMoves = [] 
           
           for pattern in self.patterns:
@@ -17,8 +17,6 @@ class Knight(Piece):
                  tempCol =  self.column
                  tempRow += pattern[0]  
                  tempCol += pattern[1]  
-                 
-             
                  print("1")
                   
                              
@@ -28,14 +26,18 @@ class Knight(Piece):
                      
                  elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
                      print("2")
-                     pygame.draw.circle(Board.screen , "blue" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
+                     if draw :
+                         pygame.draw.circle(Board.screen , "blue" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
                      self.validMoves.append([tempRow,tempCol])
                  elif Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color and Board.getPieceOnGivenSquare(tempRow , tempCol).tag != "king":
-                     print("3")         
-                     pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
+                     print("3") 
+                     if draw :
+                         pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
                      self.validMoves.append([tempRow,tempCol])
-                 elif  Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color and  Board.getPieceOnGivenSquare(tempRow , tempCol).tag =="king" and self.tag != "pawn" :
-                      pygame.draw.circle(Board.screen , "purple" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )   
+                 elif  Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color and  Board.getPieceOnGivenSquare(tempRow , tempCol).tag =="king" :
+                      if draw : 
+                          pygame.draw.circle(Board.screen , "purple" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )  
+                      self.validMoves.append([tempRow,tempCol])
                  else :
                      pass
 

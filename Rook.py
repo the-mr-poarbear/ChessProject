@@ -7,7 +7,7 @@ class Rook(Piece):
         super().__init__( tag , color , sprite , rowCol )
         self.patterns = [[0,1] , [1,0] , [-1,0] , [0,-1]]
         
-    def MovementSelection(self) :
+    def MovementSelection(self , draw) :
          self.validMoves = [] 
          
          for pattern in self.patterns:
@@ -21,13 +21,18 @@ class Rook(Piece):
                      if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
                          break
                      elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
-                     
-                         pygame.draw.circle(Board.screen , "blue" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
+                         if draw :
+                            pygame.draw.circle(Board.screen , "blue" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
                          self.validMoves.append([tempRow,tempCol])
-                     elif Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color :
-                         pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )  
+                     elif Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color and Board.getPieceOnGivenSquare(tempRow , tempCol).tag !="king"  :
+                         if draw :
+                             pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )  
                          self.validMoves.append([tempRow,tempCol])
                          break
+                     elif  Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color and Board.getPieceOnGivenSquare(tempRow , tempCol).tag =="king" :
+                        if draw : 
+                           pygame.draw.circle(Board.screen , "purple" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )  
+                        self.validMoves.append([tempRow,tempCol])
                      else :
                          break
     

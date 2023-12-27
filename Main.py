@@ -140,7 +140,7 @@ timer = pygame.time.Clock()
 fps = 60  
     
     
-run = True 
+
 
 Board.pieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL , pawn_B1,pawn_B2,pawn_B3,pawn_B4,pawn_B5,pawn_B6,pawn_B7,pawn_B8 , rook_BL , rook_BR  ,
                 queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W1 ,pawn_W2,pawn_W3,pawn_W4,pawn_W5,pawn_W6,pawn_W7,pawn_W8 , rook_WL , rook_WR  ]
@@ -151,14 +151,14 @@ def DrawPieces():
        
 #run loop 
 
-while run : 
+while Board.run : 
     timer.tick(fps)
         
     screen.blit(Board.board ,(0,0))
     DrawPieces()
     for event in pygame.event.get():
         if event.type == pygame.QUIT :
-            run = False
+            Board.run = False
         if event.type == pygame.MOUSEBUTTONDOWN :
              #print(pygame.mouse.get_pos[0]) 
             # (x,y) = 
@@ -181,10 +181,14 @@ while run :
              else : 
                 piece.selected = False
                 Board.selectedPiece = None
-               
-    #print(pygame.mouse.get_pos())       
+    king_B.check = king_B.Check() 
+    king_W.check = king_W.Check() 
+    #print(pygame.mouse.get_pos()) 
+    king_W.Checkmate() 
+    king_B.Checkmate() 
     pygame.display.flip()
-        
+  
+       
 pygame.quit()
 
 
