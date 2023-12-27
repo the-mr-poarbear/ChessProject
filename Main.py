@@ -174,11 +174,8 @@ while run :
                       
              else : 
                 piece.selected = False
-          
-             
-             
-             
-            
+                Board.selectedPiece = None
+               
     #print(pygame.mouse.get_pos())       
     pygame.display.flip()
         
