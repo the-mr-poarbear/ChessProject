@@ -1,4 +1,5 @@
 
+
 import pygame
 from Board import Board
 
@@ -42,7 +43,7 @@ class Piece:
                 self.column = rowCol[1]  
                 Board.SwitchTurn()
                 self.selected = False
-                
+                #Board.saveLog(self.tag , self.FileRank(rowCol))
                 if self.tag == "pawn" and  self.firstMove :
                     self.firstMove = False
                 
@@ -65,4 +66,43 @@ class Piece:
                     
                     #Board.SwitchTurn()
 
-   
+    def FileRank(self , rowCol) :
+        row = rowCol[0]
+        col = rowCol[1]
+        
+        if row == 1 :
+            rank = 8
+        elif row ==2 :
+            rank = 7
+        elif row ==3 :
+            rank = 6
+        elif row ==4 :
+            rank = 5
+        elif row ==5 :
+            rank = 4
+        elif row ==6 :
+            rank = 3
+        elif row ==7 :
+            rank = 2
+        elif row ==8 :
+            rank = 1
+            
+
+        if col == 1 :
+            file = "a"
+        elif col ==2 :
+            file = "b"
+        elif col ==3 :
+            file = "c"
+        elif col ==4 :
+            file = "d"
+        elif col ==5 :
+            file = "e"
+        elif col ==6 :
+            file = "f"
+        elif col ==7 :
+            file = "g"
+        elif col ==8 :
+            file = "h"
+        
+        return file + str(rank)

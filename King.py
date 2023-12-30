@@ -13,6 +13,7 @@ class King(Piece):
         Board.king = self
         self.check = False
         self.checkmate = False
+        self.shorten = "K"
         
     def Draw(self) :
         if not self.isDead :
@@ -58,7 +59,7 @@ class King(Piece):
 
 
     def Check(self):
-        checkMoves = []
+        
         for piece in Board.pieces : 
             if piece.color != self.color :
                 piece.MovementSelection(False) 
@@ -72,12 +73,9 @@ class King(Piece):
         if self.check and Board.turn != self.color :
             font = pygame.font.Font("freesansbold.ttf" , 80)
             Board.SwitchTurn
-            done = False
-            counter = 0
-           
             Board.screen.blit(font.render((Board.turn + ' Won'), True, Board.turn), Board.startingPoint)
             pygame.display.flip()
-            time.sleep(3)
             Board.run = False   
- 
+            time.sleep(3)
+            Board.won = Board.turn
 

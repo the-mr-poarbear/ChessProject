@@ -6,7 +6,7 @@ class Pawn(Piece):
      
      def __init__ (self , tag , color , sprite , rowCol ) :
         super().__init__(  tag , color , sprite , rowCol )
-     
+        self.shorten = ""
         if self.color == "black" :
             self.patterns = [[1,0] ,]
         else :
@@ -25,13 +25,13 @@ class Pawn(Piece):
                              tempRow += pattern[0]  
                              tempCol += pattern[1]   
                              self.PawnHandling(draw)
-                             print("1")
+                           
                             
                              if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
-                                 print("gi")
+                                pass
                      
                              elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
-                                 print("2")
+                           
                                  if draw :
                                     pygame.draw.circle(Board.screen , "blue" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
                                  self.validMoves.append([tempRow,tempCol])
@@ -43,13 +43,13 @@ class Pawn(Piece):
                      tempCol += pattern[1]  
                  
                      self.PawnHandling(draw)
-                     print("1")
+                   
                             
                      if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
-                         print("gi")
+                        pass 
                      
                      elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
-                         print("2")
+                         
                          if draw :
                             pygame.draw.circle(Board.screen , "blue" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
                          self.validMoves.append([tempRow,tempCol])

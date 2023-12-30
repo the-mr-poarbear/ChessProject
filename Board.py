@@ -1,8 +1,10 @@
-from ast import List
 import pygame
 
+
+from Stack import Stack
+
 class Board:
-    
+    won = ""
     startingPoint = [560,140]
     sideOfTheSquare = 100
     board = pygame.image.load("ChessProject\Board\APossant.png")
@@ -17,8 +19,82 @@ class Board:
     selectedPiece = None
     king = None
     turn = "white"
+    # num , piece , captured sign ,destination , checkOrCheckmate 
+    log = []
+    undo = Stack()
+    redo = Stack()
     def __init__(self) :
         
+        pass
+    
+    def saveLog(piece ,destination , captured = False  , check = False , checkmate = False):
+        
+        if piece.tag != "pawn" :
+            if not captured and not check and not checkmate :
+                 Board.log.append(piece.shorten + destination ) 
+                 
+            elif captured and not check and not checkmate :
+                 Board.log.append(piece.shorten + "x" + destination ) 
+                 
+            elif not captured and check and not checkmate :
+                 Board.log.append(piece.shorten + destination + "+" )
+                 
+            elif captured and check and not checkmate :
+                 Board.log.append(piece.shorten + "x" + destination + "+" )
+                 
+            elif not captured and checkmate :
+                 Board.log.append(piece.shorten + destination + "#" )
+                 if Board.won == "white" :
+                    Board.log.append("1-0") 
+                 else :
+                    Board.log.append("0-1") 
+            elif captured and checkmate :
+                 Board.log.append(piece.shorten + "x" + destination + "#" )
+                 if Board.won == "white" :
+                    Board.log.append("1-0") 
+                 else :
+                    Board.log.append("0-1") 
+        else :
+            if not captured and not check and not checkmate :
+                    Board.log.append( destination ) 
+                 
+            elif captured and not check and not checkmate :
+                    Board.log.append(piece.FileRank([piece.row , piece.column])[0] + "x" + destination ) 
+                 
+            elif not captured and check and not checkmate :
+                    Board.log.append( destination + "+" )
+                 
+            elif captured and check and not checkmate :
+                    Board.log.append(piece.FileRank([piece.row , piece.column])[0] + "x" + destination + "+" )
+                 
+            elif not captured and checkmate :
+                    Board.log.append( destination + "#" )
+                    if Board.won == "white" :
+                        Board.log.append("1-0") 
+                    else :
+                        Board.log.append("0-1") 
+            elif  captured and checkmate :
+                    Board.log.append( piece.FileRank([piece.row , piece.column])[0] + "x" + destination + "#" )
+                    
+                    if Board.won == "white" :
+                        Board.log.append("1-0") 
+                    else :
+                        Board.log.append("0-1") 
+          
+        Board.PrintLog() 
+        
+            
+    def PrintLog() :
+        num = 0
+        for i in range (len(Board.log)) :
+            if i%2 == 0 :
+                num +=1
+                print(str(num) + ". ")
+                
+            print(Board.log[i])   
+            
+                          
+    def Undo():
         pass
     
     def getPieceOnGivenSquare( row , column) :     
@@ -56,4 +132,9 @@ class Board:
         else :
             Board.turn = "white"
         Board.selectedPiece = None
-        
+    
+    def CheckColor(kingWch , kingBch) :
+        if kingWch :
+             return "white"
+        elif kingBch :
+            return "black" 

@@ -7,7 +7,7 @@ class Bishop(Piece):
     def __init__ (self , tag , color , sprite , rowCol ) :
         super().__init__( tag , color , sprite , rowCol)
         self.patterns = [ [1,1] , [-1,-1] , [1,-1] , [-1,1] ]
-        
+        self.shorten = "B"
     def MovementSelection(self , draw) :
          self.validMoves = [] 
          
