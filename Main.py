@@ -170,13 +170,8 @@ while Board.run :
                 targetPiece = Board.selectedPiece 
                 if targetPiece :          
                      targetPiece.Move(rowCol)
-                     king_B.check = king_B.Check() 
-                     king_W.check = king_W.Check() 
-                     color = Board.CheckColor(king_W.check , king_B.check)
-                     if color != None and color != targetPiece.color : 
-                          Board.saveLog(targetPiece , targetPiece.FileRank(rowCol) , check = True )    
-                     else : 
-                          Board.saveLog(targetPiece , targetPiece.FileRank(rowCol)) 
+                     
+                     Board.saveLog(targetPiece , targetPiece.FileRank(rowCol), King.Check() ) 
                      
                                           
              elif not piece.selected and Board.turn == piece.color :   
@@ -185,21 +180,15 @@ while Board.run :
              elif not piece.selected and Board.turn != piece.color : 
                   targetPiece = Board.selectedPiece                      
                   if targetPiece :
-                      Board.saveLog(targetPiece , targetPiece.FileRank(rowCol) , True )
-                      targetPiece.KillOpponent(piece)          
-                      king_B.check = king_B.Check() 
-                      king_W.check = king_W.Check() 
-                      color = Board.CheckColor(king_W.check , king_B.check)
-                      if color != None and color != targetPiece.color : 
-                          value = Board.log.pop(len(Board.log) -1)
-                          Board.log.append(value + "+" )    
- 
+                      
+                      targetPiece.KillOpponent(piece)   
+                      
              else : 
                 piece.selected = False
                 Board.selectedPiece = None
     #king_B.check = king_B.Check() 
     #king_W.check = king_W.Check() 
-    #print(pygame.mouse.get_pos()) 
+
     king_W.Checkmate() 
     king_B.Checkmate() 
     pygame.display.flip()

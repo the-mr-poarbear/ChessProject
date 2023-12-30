@@ -1,6 +1,7 @@
 import pygame
 
 
+
 from Stack import Stack
 
 class Board:
@@ -17,7 +18,7 @@ class Board:
     screen = pygame.display.set_mode([board.get_width() , board.get_height()])
     pieces = []
     selectedPiece = None
-    king = None
+    king = []
     turn = "white"
     # num , piece , captured sign ,destination , checkOrCheckmate 
     log = []
@@ -27,7 +28,13 @@ class Board:
         
         pass
     
-    def saveLog(piece ,destination , captured = False  , check = False , checkmate = False):
+    def saveLog(piece ,destination , kingCheck , captured = False   , checkmate = False):
+        
+        color = kingCheck
+        if color != None and color != piece.color :
+            check = True 
+        else:
+            check = False 
         
         if piece.tag != "pawn" :
             if not captured and not check and not checkmate :
@@ -56,24 +63,30 @@ class Board:
                     Board.log.append("0-1") 
         else :
             if not captured and not check and not checkmate :
+                    print("1")    
                     Board.log.append( destination ) 
                  
             elif captured and not check and not checkmate :
+                    print("2")     
                     Board.log.append(piece.FileRank([piece.row , piece.column])[0] + "x" + destination ) 
                  
             elif not captured and check and not checkmate :
+                    print("3")     
                     Board.log.append( destination + "+" )
                  
             elif captured and check and not checkmate :
+                    print("4")     
                     Board.log.append(piece.FileRank([piece.row , piece.column])[0] + "x" + destination + "+" )
                  
             elif not captured and checkmate :
+                    print("5")     
                     Board.log.append( destination + "#" )
                     if Board.won == "white" :
                         Board.log.append("1-0") 
                     else :
                         Board.log.append("0-1") 
             elif  captured and checkmate :
+                    print("6")     
                     Board.log.append( piece.FileRank([piece.row , piece.column])[0] + "x" + destination + "#" )
                     
                     if Board.won == "white" :

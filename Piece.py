@@ -4,6 +4,7 @@ import pygame
 from Board import Board
 
 
+
 screen = Board.screen 
 
 
@@ -59,9 +60,16 @@ class Piece:
     def KillOpponent(self, opPiece) :
         for validMove in self.validMoves :
                 if validMove == [opPiece.row , opPiece.column] :
-                    print("bye") 
-                    self.Move([opPiece.row , opPiece.column])
-                    opPiece.Delete()                           
+                    print([opPiece.row , opPiece.column])
+                    
+                    print(Piece.Check())
+                    
+                    Board.saveLog (self  , self.FileRank(validMove) ,Piece.Check() , True )
+                    self.Move([opPiece.row , opPiece.column]) 
+                    Piece.Check()
+                    opPiece.Delete() 
+                    
+                    print([opPiece.row , opPiece.column])
                     self.selected = False 
                     
                     #Board.SwitchTurn()
@@ -106,3 +114,34 @@ class Piece:
             file = "h"
         
         return file + str(rank)
+    
+    def Check():
+        
+        if Board.king[0].color == "white" :
+                kingW =  Board.king[0]
+                kingB = Board.king[1]
+        else :
+                kingB =  Board.king[0]
+                kingW = Board.king[1] 
+                
+        for piece in Board.pieces : 
+            
+            if piece.color == "black" :
+                piece.MovementSelection(False) 
+                for validMove in piece.validMoves :
+                    if validMove == [kingW.row , kingW.column] :
+                        print("white check")
+                        kingW.check = True
+                        return "white"
+                kingW.check = False
+                   
+            if piece.color == "white" : 
+                piece.MovementSelection(False) 
+                for validMove in piece.validMoves :
+                    if validMove == [kingB.row , kingB.column] :
+                        print("black check")
+                        kingB.check = True
+                        return "black" 
+                    
+                kingB.check = False
+                 

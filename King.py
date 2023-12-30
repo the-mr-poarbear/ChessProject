@@ -10,7 +10,7 @@ class King(Piece):
         super().__init__( tag , color , sprite , rowCol)
         self.patterns = [[0,1] , [1,0] , [-1,0] , [0,-1] , [1,1] , [-1,-1] , [1,-1] , [-1,1] ]
         self.cult = False
-        Board.king = self
+        Board.king.append(self)
         self.check = False
         self.checkmate = False
         self.shorten = "K"
@@ -58,16 +58,35 @@ class King(Piece):
                      pass
 
 
-    def Check(self):
+    def Check():
         
+        if Board.king[0].color == "white" :
+                kingW =  Board.king[0]
+                kingB = Board.king[1]
+        else :
+                kingB =  Board.king[0]
+                kingW = Board.king[1] 
+                
         for piece in Board.pieces : 
-            if piece.color != self.color :
+            
+            if piece.color != "white" :
                 piece.MovementSelection(False) 
                 for validMove in piece.validMoves :
-                    if validMove == [self.row , self.column] :
-                        print("check")
-                        return True
-        return False            
+                    if validMove == [kingW.row , kingW.column] :
+                        print("white check")
+                        kingW.check = True
+                        return "white"
+                kingW.check = False
+                    
+            else :
+                piece.MovementSelection(False) 
+                for validMove in piece.validMoves :
+                    if validMove == [kingB.row , kingB.column] :
+                        print("black check")
+                        kingB.check = True
+                        return "black" 
+                    
+                kingB.check = False
                  
     def Checkmate(self):
         if self.check and Board.turn != self.color :
