@@ -64,11 +64,9 @@ class Piece:
                     
                     print(Piece.Check())
                     
-                    Board.saveLog (self  , self.FileRank(validMove) ,Piece.Check() , True )
                     self.Move([opPiece.row , opPiece.column]) 
-                    Piece.Check()
                     opPiece.Delete() 
-                    
+                    Board.saveLog (self  , self.FileRank(validMove) ,Piece.Check() , True )
                     print([opPiece.row , opPiece.column])
                     self.selected = False 
                     
