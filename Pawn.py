@@ -13,80 +13,73 @@ class Pawn(Piece):
             self.patterns =  [[-1,0] ,]
         self.firstMove = True
 
-     def MovementSelection(self ,draw) :
+     def MovementSelection(self , ignoreCheck = False) :
           self.validMoves = [] 
           
           for pattern in self.patterns:
-                 tempRow = self.row
-                 tempCol =  self.column
+                
                  if self.firstMove : 
+                     tempRow = self.row
+                     tempCol =  self.column
                      for i in range(2) :
-                          if not (tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8) :
+                          
                              tempRow += pattern[0]  
                              tempCol += pattern[1]   
-                             self.PawnHandling(draw)
+                             self.PawnHandling()
                            
                             
                              if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
                                 pass
                      
                              elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
-                           
-                                 if draw :
-                                    pygame.draw.circle(Board.screen , "blue" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
+                                 
                                  self.validMoves.append([tempRow,tempCol])
                              else :
                                  pass
-                 else :            
-                               
+                 else :
+                     tempRow = self.row
+                     tempCol =  self.column
                      tempRow += pattern[0]  
                      tempCol += pattern[1]  
                  
-                     self.PawnHandling(draw)
-                   
-                            
+                     self.PawnHandling()
+      
                      if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
                         pass 
                      
                      elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
-                         
-                         if draw :
-                            pygame.draw.circle(Board.screen , "blue" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
                          self.validMoves.append([tempRow,tempCol])
                      else :
                          pass
+                     
+          if not ignoreCheck :       
+                   self.CheckValidMoves(self.validMoves)           
+          return self.validMoves  
 
-     def PawnHandling(self , draw) :
+     def PawnHandling(self) :
          
         
         if self.tag == "pawn" and self.color == "white" :
-                     
+                    
               if Board.getPieceOnGivenSquare(self.row-1 , self.column-1) is not None :
                          
-                    if Board.getPieceOnGivenSquare(self.row-1 , self.column-1).color == "black" :
-                        if draw :    
-                          pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(self.row-1 +.5 ,  self.column-1 + .5) ,10 )  
+                    if Board.getPieceOnGivenSquare(self.row-1 , self.column-1).color == "black" :       
                         self.validMoves.append([self.row-1,self.column-1])
                             
               if Board.getPieceOnGivenSquare(self.row-1 , self.column+1) is not None :
                          
-                    if Board.getPieceOnGivenSquare(self.row-1 , self.column+1).color == "black" :
-                        if draw :   
-                           pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(self.row-1 +.5 ,  self.column+1 + .5) ,10 )  
+                    if Board.getPieceOnGivenSquare(self.row-1 , self.column+1).color == "black" :               
                         self.validMoves.append([self.row-1,self.column+1])
                             
         elif self.tag == "pawn" and self.color == "black" :
                      
               if Board.getPieceOnGivenSquare(self.row+1 , self.column-1) is not None :
                          
-                    if Board.getPieceOnGivenSquare(self.row+1 , self.column-1).color == "white" :
-                        if draw :
-                             pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(self.row+1 +.5 ,  self.column-1 + .5) ,10 )  
+                    if Board.getPieceOnGivenSquare(self.row+1 , self.column-1).color == "white" :                    
                         self.validMoves.append([self.row+1,self.column-1])
                         
               if Board.getPieceOnGivenSquare(self.row+1 , self.column+1) is not None :
                          
-                    if Board.getPieceOnGivenSquare(self.row+1 , self.column+1).color == "white" :
-                        if draw :
-                            pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(self.row+1 +.5 ,  self.column+1 + .5) ,10 )  
+                    if Board.getPieceOnGivenSquare(self.row+1 , self.column+1).color == "white" :                     
                         self.validMoves.append([self.row+1,self.column+1])
+        

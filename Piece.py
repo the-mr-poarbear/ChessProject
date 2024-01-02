@@ -1,5 +1,7 @@
 
 
+import copy
+from ctypes.wintypes import RGB
 import pygame
 from Board import Board
 
@@ -24,34 +26,52 @@ class Piece:
     def Draw(self) :
         if not self.isDead :
             if self.selected :
-                self.MovementSelection(True)
+                self.MovementSelection()
+                self.ShowValidMoves()
             position = Board.getPoistionOnGivenSquare(self.row , self.column)
             screen.blit(self.sprite ,( position[0] , position[1]) )
         
         
-    def MovementSelection(self , draw) :
+    def MovementSelection(self , ignoreCheck = False) :
          pass
              
             
-             
+    def ShowValidMoves(self) :
+        if self.color == "white" :
+             for i , validMove in enumerate(self.validMoves) :
+            
+                pygame.draw.circle(Board.screen , RGB(255-5 * i , 111 , 180 - 5 * i) , Board.getPoistionOnGivenSquare(validMove[0] +.5 , validMove[1] + .5) ,10 ) 
+        else :
+            for i , validMove in enumerate(self.validMoves) :
+            
+                pygame.draw.circle(Board.screen , RGB(255-5 * i , 80 , 60 + 5 * i) , Board.getPoistionOnGivenSquare(validMove[0] +.5 , validMove[1] + .5) ,10 ) 
+        
    
        
                         
-    def Move(self , rowCol) :
-        for validMove in self.validMoves :
-             if validMove == rowCol :
-                self.row = rowCol[0]
-                self.column = rowCol[1]  
-                Board.SwitchTurn()
-                self.selected = False
-                #Board.saveLog(self.tag , self.FileRank(rowCol))
-                if self.tag == "pawn" and  self.firstMove :
-                    self.firstMove = False
+    def Move(self , rowCol , doMove = True) :
+        
+        if doMove :
+            for validMove in self.validMoves :
+                 if validMove == rowCol :
+                    self.row = rowCol[0]
+                    self.column = rowCol[1] 
+             
                 
+                    
+                    Board.SwitchTurn()
+                    self.selected = False
+                    #Board.saveLog(self.tag , self.FileRank(rowCol))
+                    if self.tag == "pawn" and  self.firstMove :
+                         self.firstMove = False
+        else :
+            self.row = rowCol[0]
+            self.column = rowCol[1] 
+            
     
     def Delete(self) :
         self.isDead = True
-        print("deleted")
+        #print("deleted")
         Board.pieces.remove(self)
         
   
@@ -60,17 +80,45 @@ class Piece:
     def KillOpponent(self, opPiece) :
         for validMove in self.validMoves :
                 if validMove == [opPiece.row , opPiece.column] :
-                    print([opPiece.row , opPiece.column])
-                    
-                    print(Piece.Check())
-                    
+                  
+
+                    fr = copy.deepcopy(self.FileRank([self.row , self.column]))
+                    print(fr)
                     self.Move([opPiece.row , opPiece.column]) 
-                    opPiece.Delete() 
-                    Board.saveLog (self  , self.FileRank(validMove) ,Piece.Check() , True )
-                    print([opPiece.row , opPiece.column])
+                    Board.saveLog (self  , self.FileRank(validMove) ,Piece.Check() , captured=  True  , lastFR = fr )
+                
                     self.selected = False 
-                    
+                    Board.Remove(opPiece) 
+                    Piece.Check()
                     #Board.SwitchTurn()
+
+    def CheckValidMoves(self , tempValidMoves) :
+        startingLoc = [self.row  , self.column]
+        result = []
+        
+       
+        for validMove in tempValidMoves :
+           
+            
+            
+            if Board.getPieceOnGivenSquare(validMove[0] , validMove[1]) != None :
+                    enemyPiece = Board.getPieceOnGivenSquare(validMove[0] , validMove[1])
+                    print(enemyPiece.tag)
+                    enemyPiece.isDead = True
+                    if Piece.Check() != self.color :
+                        result.append(validMove) 
+                    enemyPiece.isDead = False
+            #print(validMove)   
+            else :
+                self.Move(validMove , doMove= False)
+                if Piece.Check() != self.color :
+                    result.append(validMove) 
+                self.Move(startingLoc , doMove= False) 
+           
+            
+            Piece.Check()
+        self.validMoves = copy.deepcopy(result)
+        
 
     def FileRank(self , rowCol) :
         row = rowCol[0]
@@ -123,23 +171,27 @@ class Piece:
                 kingW = Board.king[1] 
                 
         for piece in Board.pieces : 
-            
-            if piece.color == "black" :
-                piece.MovementSelection(False) 
-                for validMove in piece.validMoves :
-                    if validMove == [kingW.row , kingW.column] :
-                        print("white check")
-                        kingW.check = True
-                        return "white"
-                kingW.check = False
+            if not piece.isDead :
+                if piece.color == "black" :
+                    tempMoves = copy.deepcopy(piece.MovementSelection( ignoreCheck = True) )
+          
+                    for tempMove2 in tempMoves :
+                        if tempMove2 == [kingW.row , kingW.column] :
+                            #print("white check")
+                            kingW.check = True
+                            return "white"
+                    kingW.check = False
                    
-            if piece.color == "white" : 
-                piece.MovementSelection(False) 
-                for validMove in piece.validMoves :
-                    if validMove == [kingB.row , kingB.column] :
-                        print("black check")
-                        kingB.check = True
-                        return "black" 
+                elif piece.color == "white" : 
+                
+                    tempMoves2 = copy.deepcopy(piece.MovementSelection(ignoreCheck = True) )
+                    for tempMove in tempMoves2 :
+                        if tempMove == [kingB.row , kingB.column] :
+                            #print("black check")
+                            kingB.check = True
+                            return "black" 
                     
-                kingB.check = False
-                 
+                    kingB.check = False
+    
+    def CheckMate() :
+        pass

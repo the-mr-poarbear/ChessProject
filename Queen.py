@@ -9,7 +9,8 @@ class Queen(Piece):
         super().__init__( tag , color , sprite , rowCol)
         self.patterns = [[0,1] , [1,0] , [-1,0] , [0,-1] , [1,1] , [-1,-1] , [1,-1] , [-1,1] ]
         self.shorten = "Q"
-    def MovementSelection(self , draw) :
+        
+    def MovementSelection(self ,  ignoreCheck = False) :
          self.validMoves = [] 
          
          for pattern in self.patterns:
@@ -23,21 +24,20 @@ class Queen(Piece):
                      if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
                          break
                      elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
-                         if draw :
-                            pygame.draw.circle(Board.screen , "blue" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
+                         
                          self.validMoves.append([tempRow,tempCol])
                      elif Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color and Board.getPieceOnGivenSquare(tempRow , tempCol).tag !="king":
-                         if draw :
-                             pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )  
+
                          self.validMoves.append([tempRow,tempCol])
                          break
                      elif  Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color and  Board.getPieceOnGivenSquare(tempRow , tempCol).tag =="king" :
-                        if draw : 
-                           pygame.draw.circle(Board.screen , "purple" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )  
+                        
                         self.validMoves.append([tempRow,tempCol])
                      else :
                          break
-
+         if not ignoreCheck :       
+                 self.CheckValidMoves(self.validMoves)           
+         return self.validMoves  
 
 
 

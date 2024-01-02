@@ -1,5 +1,6 @@
 from ast import List
 from tabnanny import check
+import time
 import pygame
 
 from Board import Board
@@ -135,8 +136,9 @@ blackPieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL 
 
 screen = Board.screen
 pygame.display.set_caption("Data Structure Project Chess Game")
-font = pygame.font.Font("freesansbold.ttf" , 20)
+font = pygame.font.Font("freesansbold.ttf" , 30)
 bigFont = pygame.font.Font("freesansbold.ttf" , 50)
+veryBigFont = pygame.font.Font("freesansbold.ttf" , 120)
 timer = pygame.time.Clock()
 fps = 60  
     
@@ -148,13 +150,37 @@ Board.pieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL
 def DrawPieces():      
     for piece in Board.pieces :   
             piece.Draw()
-      
+            
+    for pieceW in Board.whiteSideDead :
+        pieceW.DrawDeadW()
+        
+    for pieceB in Board.blackSideDead :
+        pieceB.DrawDeadB()
        
 #run loop 
-
+def Counter() :
+    now = time.time()
+    
+    print(str(int(now - Board.timer)), end="\r")
+    timer = str(30 - int(now - Board.timer))
+    text = veryBigFont.render(timer, True, (255 ,255 ,255))
+    
+    if Board.turn == "white" :
+        sub = "White's Turn"
+    else :
+        sub = "Black's Turn"
+        
+    subText = font.render(sub, True, (255 ,255 ,255))
+    X = Board.startingPoint[0] + 10.4 * Board.sideOfTheSquare
+    Y = Board.startingPoint[1] + .1 * Board.sideOfTheSquare
+    Board.screen.blit(text ,(X,Y) )
+    Board.screen.blit(subText ,(X - .4 * Board.sideOfTheSquare , Y + 2 * Board.sideOfTheSquare ) )
+    if now - Board.timer >= 30 :
+        Board.SwitchTurn()
+    
 while Board.run : 
     timer.tick(fps)
-        
+    
     screen.blit(Board.board ,(0,0))
     DrawPieces()
     for event in pygame.event.get():
@@ -188,11 +214,11 @@ while Board.run :
                 Board.selectedPiece = None
     #king_B.check = king_B.Check() 
     #king_W.check = king_W.Check() 
-
-    king_W.Checkmate() 
-    king_B.Checkmate() 
+    Counter()
+    #king_W.Checkmate() 
+    #king_B.Checkmate() 
     pygame.display.flip()
-  
+    print(mouse.get_position() )
        
 pygame.quit()
 

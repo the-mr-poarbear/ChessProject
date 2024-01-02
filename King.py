@@ -21,73 +21,37 @@ class King(Piece):
                 position = Board.getPoistionOnGivenSquare(self.row , self.column)      
                 pygame.draw.rect(Board.screen , "red", pygame.Rect(position[0] , position[1] , Board.sideOfTheSquare , Board.sideOfTheSquare))
             if self.selected :
-                self.MovementSelection(True)
+                self.MovementSelection()
+                self.ShowValidMoves()
             position = Board.getPoistionOnGivenSquare(self.row , self.column)
             Board.screen.blit(self.sprite ,( position[0] , position[1]) )
 
-    def MovementSelection(self , draw) :
-          self.validMoves = [] 
-          
-          for pattern in self.patterns:
-                 tempRow = self.row
-                 tempCol =  self.column
-                 tempRow += pattern[0]  
-                 tempCol += pattern[1]  
-                 
-                  
-                             
-                         
-                 if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
-                    pass   
-                     
-                 elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
-                     
-                     if draw :
-                         pygame.draw.circle(Board.screen , "blue" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
-                     self.validMoves.append([tempRow,tempCol])
-                 elif Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color and Board.getPieceOnGivenSquare(tempRow , tempCol).tag != "king":
-                     
-                     if draw :
-                         pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 )
-                     self.validMoves.append([tempRow,tempCol])
-                 elif  Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color and  Board.getPieceOnGivenSquare(tempRow , tempCol).tag =="king" :
-                      if draw : 
-                          pygame.draw.circle(Board.screen , "purple" , Board.getPoistionOnGivenSquare(tempRow +.5 , tempCol + .5) ,10 ) 
-                      self.validMoves.append([tempRow,tempCol])
-                 else :
-                     pass
-
-
-    def Check():
-        
-        if Board.king[0].color == "white" :
-                kingW =  Board.king[0]
-                kingB = Board.king[1]
-        else :
-                kingB =  Board.king[0]
-                kingW = Board.king[1] 
-                
-        for piece in Board.pieces : 
+    def MovementSelection(self  , ignoreCheck = False) :
             
-            if piece.color != "white" :
-                piece.MovementSelection(False) 
-                for validMove in piece.validMoves :
-                    if validMove == [kingW.row , kingW.column] :
-                        print("white check")
-                        kingW.check = True
-                        return "white"
-                kingW.check = False
+            self.validMoves = [] 
+            for pattern in self.patterns:
+                    tempRow = self.row
+                    tempCol =  self.column
+                    tempRow += pattern[0]  
+                    tempCol += pattern[1]     
+                         
+                    if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
+                        pass 
+                    elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
+                        self.validMoves.append([tempRow,tempCol])
+                            
+                    elif Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color :
+                            
+                        self.validMoves.append([tempRow,tempCol])  
+                    else :
+                        pass
                     
-            else :
-                piece.MovementSelection(False) 
-                for validMove in piece.validMoves :
-                    if validMove == [kingB.row , kingB.column] :
-                        print("black check")
-                        kingB.check = True
-                        return "black" 
-                    
-                kingB.check = False
-                 
+            if not ignoreCheck :       
+                    self.CheckValidMoves(self.validMoves) 
+         
+            return self.validMoves 
+    
+   
     def Checkmate(self):
         if self.check and Board.turn != self.color :
             font = pygame.font.Font("freesansbold.ttf" , 80)

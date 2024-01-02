@@ -1,3 +1,4 @@
+import time
 import pygame
 
 
@@ -22,13 +23,20 @@ class Board:
     turn = "white"
     # num , piece , captured sign ,destination , checkOrCheckmate 
     log = []
+    timer = time.time()
+    
+    whiteSideDead = []
+    whiteSideDeadPos = []
+    whiteSideDeadGrave = 50
+
+    blackSideDead = []
     undo = Stack()
     redo = Stack()
     def __init__(self) :
         
         pass
     
-    def saveLog(piece ,destination , kingCheck , captured = False   , checkmate = False):
+    def saveLog(piece ,destination , kingCheck , captured = False   , checkmate = False ,lastFR = []):
         
         color = kingCheck
         if color != None and color != piece.color :
@@ -63,30 +71,30 @@ class Board:
                     Board.log.append("0-1") 
         else :
             if not captured and not check and not checkmate :
-                    print("1")    
+                    #print("1")    
                     Board.log.append( destination ) 
                  
             elif captured and not check and not checkmate :
-                    print("2")     
-                    Board.log.append(piece.FileRank([piece.row , piece.column])[0] + "x" + destination ) 
+                    #print("2")     
+                    Board.log.append(lastFR[0] + "x" + destination ) 
                  
             elif not captured and check and not checkmate :
-                    print("3")     
+                    #print("3")     
                     Board.log.append( destination + "+" )
                  
             elif captured and check and not checkmate :
-                    print("4")     
-                    Board.log.append(piece.FileRank([piece.row , piece.column])[0] + "x" + destination + "+" )
+                    #print("4")     
+                    Board.log.append(lastFR[0] + "x" + destination + "+" )
                  
             elif not captured and checkmate :
-                    print("5")     
+                    #print("5")     
                     Board.log.append( destination + "#" )
                     if Board.won == "white" :
                         Board.log.append("1-0") 
                     else :
                         Board.log.append("0-1") 
             elif  captured and checkmate :
-                    print("6")     
+                    #print("6")     
                     Board.log.append( piece.FileRank([piece.row , piece.column])[0] + "x" + destination + "#" )
                     
                     if Board.won == "white" :
@@ -133,21 +141,34 @@ class Board:
         return [int(row),int(col)]
 
     def selectPiece(piece) :
-          print("notagn")
+          #print("notagn")
           for tPiece in Board.pieces :
                 tPiece.selected = False  
           piece.selected = True 
           Board.selectedPiece = piece   
                 
     def SwitchTurn():
+        Board.timer = time.time()
         if Board.turn == "white" :
+            #print("1")
             Board.turn = "black"
         else :
+            #print("2")
             Board.turn = "white"
         Board.selectedPiece = None
+        #print("switched")
     
     def CheckColor(kingWch , kingBch) :
         if kingWch :
              return "white"
         elif kingBch :
             return "black" 
+    
+    def Remove(piece ) :
+        piece.isDead = True
+        piece.sprite = pygame.transform.scale(piece.sprite , (30,30) )
+        Board.pieces.remove(piece) 
+        if piece.color == "white" :
+            Board.whiteSideDead.append(piece) 
+        else :
+            Board.blackSideDead.append(piece)  
