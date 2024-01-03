@@ -1,4 +1,5 @@
 from ast import List
+import copy
 from tabnanny import check
 import time
 import pygame
@@ -198,11 +199,13 @@ while Board.run :
              if piece is None :                
                 targetPiece = Board.selectedPiece 
                 if targetPiece :          
-                     
-                     if rowCol in targetPiece.MovementSelection() :
-                           Board.saveLog(targetPiece , targetPiece.FileRank(rowCol), Piece.Check() , Piece.CheckMate() ) 
+                     gi = copy.deepcopy(targetPiece.MovementSelection())
+                     if rowCol in gi :
+                           targetPiece.Move(rowCol)   
+                           Board.saveLog(targetPiece , targetPiece.FileRank(rowCol) ) 
+                          
                            
-                     targetPiece.Move(rowCol) 
+                     
                      
                      
                                           

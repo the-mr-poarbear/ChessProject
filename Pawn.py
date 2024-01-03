@@ -1,3 +1,4 @@
+import copy
 from Piece import Piece
 import pygame
 from Board import Board
@@ -14,6 +15,65 @@ class Pawn(Piece):
         self.firstMove = True
         self.enPassant = False
         self.canBeEnPa = True
+        
+     def Move (self ,rowCol , doMove = True) :
+         if doMove :
+            for validMove in self.validMoves :
+                 
+                 if validMove == rowCol :
+                    fr = copy.deepcopy(self.FileRank([self.row , self.column]))
+                    
+                    self.row = rowCol[0]
+                    self.column = rowCol[1] 
+                    
+                    if self.tag == "pawn" and self.color == "white"  :
+                        piece = Board.getPieceOnGivenSquare(validMove[0] +1 , validMove[1])
+                        if piece != None and piece.tag == "pawn" and piece.color != self.color and piece.enPassant :
+                            Board.log.pop() 
+                            Board.saveLog(self , self.FileRank(rowCol) , True , fr)
+                            Board.Remove(piece) 
+                            Board.Check()
+                            
+                        self.enPassant = False
+                        
+                    elif self.tag == "pawn" and self.color == "black" :
+                        piece = Board.getPieceOnGivenSquare(validMove[0] - 1 , validMove[1])
+                        if piece != None and piece.tag == "pawn" and piece.color != self.color and piece.enPassant :
+                            Board.Remove(piece) 
+                            Board.Check()
+                            
+                        self.enPassant = False
+                        
+                    for piece in Board.pieces :
+                        if piece.tag == "pawn" :
+                            piece.enPassant = False
+                        if piece.tag == "pawn" and piece.color != self.color :
+                            piece.canBeEnPa = False
+                            
+                    if self.tag == "pawn" and  self.firstMove :
+                             #print("1") 
+                             if self.row == 4 or self.row == 5 :
+                                # print("2")
+                                 left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
+                                 right = Board.getPieceOnGivenSquare(self.row , self.column + 1) 
+                                 if left != None and left.tag == "pawn" and left.color != self.color :
+                                     self.enPassant = True
+                                 if right != None and right.tag == "pawn" and right.color != self.color :
+                                     self.enPassant = True
+                                 
+                             self.firstMove = False
+                         
+                    Board.SwitchTurn()
+                    self.selected = False
+             
+                    Board.CheckMate()
+                    
+         else :
+            self.row = rowCol[0]
+            self.column = rowCol[1]
+                    
+     
+     
         
      def MovementSelection(self , ignoreCheck = False) :
           self.validMoves = [] 

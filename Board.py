@@ -1,3 +1,4 @@
+import copy
 import time
 import pygame
 
@@ -49,13 +50,15 @@ class Board:
         
         pass
     
-    def saveLog(piece ,destination , kingCheck , checkmateCol , captured = False  ,lastFR = []):
+    def saveLog(piece ,destination , captured = False  ,lastFR = []):
         
-        color = kingCheck
+        color = Board.Check()
         if color != None and color != piece.color :
             check = True 
         else:
             check = False 
+            
+        checkmateCol = Board.CheckMate()
         
         print(checkmateCol)
         if checkmateCol != None and checkmateCol != piece.color :
@@ -249,3 +252,59 @@ class Board:
                     file = "h"
         
                 return file + str(rank)
+            
+    def Check():
+        
+        if Board.king[0].color == "white" :
+                kingW =  Board.king[0]
+                kingB = Board.king[1]
+        else :
+                kingB =  Board.king[0]
+                kingW = Board.king[1] 
+                
+        for piece in Board.pieces : 
+            if not piece.isDead :
+                if piece.color == "black" :
+                    tempMoves = copy.deepcopy(piece.MovementSelection(ignoreCheck = True) )
+          
+                    for tempMove2 in tempMoves :
+                        if tempMove2 == [kingW.row , kingW.column] :
+                            #print("white check")
+                            kingW.check = True
+                            return "white"
+                    kingW.check = False
+                   
+                elif piece.color == "white" : 
+                
+                    tempMoves2 = copy.deepcopy(piece.MovementSelection(ignoreCheck = True) )
+                    for tempMove in tempMoves2 :
+                        if tempMove == [kingB.row , kingB.column] :
+                            #print("black check")
+                            kingB.check = True
+                            return "black" 
+                    
+                    kingB.check = False
+                    
+
+    def CheckMate() :
+        
+        if Board.Check() == "white" and Board.turn == "white" :
+            
+            moves = []
+            for piece in Board.pieces :
+                if piece.color == "white" :
+                   moves += piece.MovementSelection()
+            
+            if moves == [] :
+                print("Black Won")
+                #Board.run = False
+                return "white"
+        elif Board.Check() == "black" and Board.turn == "black" :
+            moves = []
+            for piece in Board.pieces :
+                if piece.color == "black" :
+                   moves += piece.MovementSelection()
+            if moves == []:
+                print("White Won")
+                #Board.run = False
+                return "black"

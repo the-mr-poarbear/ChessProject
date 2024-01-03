@@ -29,7 +29,64 @@ class King(Piece):
         else :
             self.castleHousesK = [[1,6] , [1,7]]
         
-        
+     
+    def Move(self , rowCol , doMove = True) :
+        if doMove :
+            print("hi") 
+
+            for validMove in self.validMoves :
+                 print(validMove , rowCol)
+                 if validMove == rowCol :
+
+                    self.row = rowCol[0]
+                    self.column = rowCol[1] 
+                 
+                    if self.tag == "king" and validMove == self.castleHousesQ[1] and self.canQcastle :
+                        #print("goox")
+                        if self.color == "white" :
+                            targetRook = Board.rookWL
+                        else :
+                            targetRook = Board.rookBL
+                        
+                        targetRook.column += 3
+                    elif self.tag == "king" and validMove == self.castleHousesK[1] and self.canKcastle  :
+                        
+                        if self.color == "white" :
+                            targetRook = Board.rookWR
+                        else :
+                            targetRook = Board.rookBR
+                        
+                        targetRook.column -= 2
+                        
+                    for piece in Board.pieces :
+                        if piece.tag == "pawn" :
+                            piece.enPassant = False
+                        if piece.tag == "pawn" and piece.color != self.color :
+                            piece.canBeEnPa = False   
+                    
+                    if self.tag == "king" or self.tag == "rook":
+                        if self.color == "white" and ( Board.whiteKingsideCastle or Board.whiteQueensideCastle) :
+                            Board.whiteKingsideCastle = False   
+                            Board.whiteQueensideCastle = False
+                            for king in Board.king :
+                                if king.color == "white" :
+                                    king.castle = False
+                                    
+                        elif self.color == "black" and ( Board.blackKingsideCastle or Board.blackQueensideCastle) :
+                            Board.blackKingsideCastle = False   
+                            Board.blackQueensideCastle = False  
+                            for king in Board.king :
+                                if king.color == "black" :
+                                    king.castle = False
+                                    
+                    Board.SwitchTurn()
+                    self.selected = False
+             
+                    Board.CheckMate()
+        else :
+            self.row = rowCol[0]
+            self.column = rowCol[1]
+                    
     def Draw(self) :
         if not self.isDead :
             if self.check :
@@ -70,12 +127,12 @@ class King(Piece):
                         for validCastle in castleValMove :
                             self.validMoves.append(validCastle)
                         
-            
+                    
             return self.validMoves 
     
     def CastleCheck(self) :
         if self.castle :
-            if Piece.Check() != self.color :
+            if Board.Check() != self.color :
                  result = [] 
                  
                  startingPoint = copy.deepcopy( [self.row , self.column])
@@ -84,11 +141,11 @@ class King(Piece):
                     canCastle = True
                     for i in range(2) :
                          self.Move(self.castleHousesQ[i] , False)
-                         if Piece.Check() == self.color :
+                         if Board.Check() == self.color :
                             canCastle = False       
                          self.Move(startingPoint , False)
                          
-                    Piece.Check()
+                    Board.Check()
                     
                     if canCastle :
                         result.append(self.castleHousesQ[1])
@@ -99,11 +156,11 @@ class King(Piece):
                     canCastle = True
                     for house in self.castleHousesK :
                          self.Move(house , False)
-                         if Piece.Check() == self.color :
+                         if Board.Check() == self.color :
                             canCastle = False       
                          self.Move(startingPoint , False)
                          
-                    Piece.Check()
+                    Board.Check()
                     
                     if canCastle :
                         result.append(self.castleHousesK[1])
