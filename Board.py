@@ -3,9 +3,12 @@ import pygame
 
 
 
+
 from Stack import Stack
 
 class Board:
+    
+    
     won = ""
     startingPoint = [560,140]
     sideOfTheSquare = 100
@@ -30,13 +33,23 @@ class Board:
     whiteSideDeadGrave = 50
 
     blackSideDead = []
+    
+    whiteKingsideCastle = True
+    blackKingsideCastle = True
+    
+    whiteQueensideCastle = True
+    blackQueensideCastle = True
+    rookBL = None
+    rookBR = None
+    rookWL = None
+    rookWR = None 
     undo = Stack()
     redo = Stack()
     def __init__(self) :
         
         pass
     
-    def saveLog(piece ,destination , kingCheck , captured = False   , checkmate = False ,lastFR = []):
+    def saveLog(piece ,destination , kingCheck , checkmateCol , captured = False  ,lastFR = []):
         
         color = kingCheck
         if color != None and color != piece.color :
@@ -44,8 +57,26 @@ class Board:
         else:
             check = False 
         
+        print(checkmateCol)
+        if checkmateCol != None and checkmateCol != piece.color :
+           checkmate = True    
+        else :
+           checkmate = False 
+        print(checkmate)
         if piece.tag != "pawn" :
-            if not captured and not check and not checkmate :
+            
+            if piece.tag == "king":
+                print("hi")
+                print(piece.canQcastle)
+                print(destination )
+            if piece.tag == "king" and destination == Board.FileRank(piece.castleHousesQ[1]) and piece.canQcastle :
+                 Board.log.append("O-O-O")
+                 piece.canQcastle = False
+            elif piece.tag == "king" and destination == Board.FileRank(piece.castleHousesK[1]) and piece.canKcastle  :
+                 Board.log.append("O-O")
+                 piece.canKcastle = False
+                
+            elif not captured and not check and not checkmate :
                  Board.log.append(piece.shorten + destination ) 
                  
             elif captured and not check and not checkmate :
@@ -109,7 +140,7 @@ class Board:
         num = 0
         for i in range (len(Board.log)) :
             if i%2 == 0 :
-                num +=1
+                num +=1   
                 print(str(num) + ". ")
                 
             print(Board.log[i])   
@@ -119,15 +150,14 @@ class Board:
         pass
     
     def getPieceOnGivenSquare( row , column) :     
-        #file is a to h and rank is 1 to 8
-        for piece in Board.pieces :
-            
-            
+
+        for piece in Board.pieces :            
             #print(piece.row , row)
             #print(piece.column , column)
             if piece.row == row and piece.column == column :
                 return piece
-        return None  
+        return None 
+    
     def getPoistionOnGivenSquare(row , column ) :
         positionX = Board.startingPoint[0] + column * Board.sideOfTheSquare - Board.sideOfTheSquare
         positionY = Board.startingPoint[1] + row * Board.sideOfTheSquare - 16*Board.sideOfTheSquare/16
@@ -165,10 +195,57 @@ class Board:
             return "black" 
     
     def Remove(piece ) :
+        
+        #Board.pieces.remove(piece) 
+        for i in range(len(Board.pieces)) :
+            
+            if Board.pieces[i] == piece :
+                print("hi")
+                Board.pieces.pop(i)
+                break
+             
         piece.isDead = True
         piece.sprite = pygame.transform.scale(piece.sprite , (30,30) )
-        Board.pieces.remove(piece) 
-        if piece.color == "white" :
-            Board.whiteSideDead.append(piece) 
-        else :
-            Board.blackSideDead.append(piece)  
+          
+            
+
+    def FileRank(rowCol) :
+            row = rowCol[0]
+            col = rowCol[1]
+            if row<9 and row>0 and col < 9 and col >0:
+                if row == 1 :
+                    rank = 8
+                elif row ==2 :
+                    rank = 7
+                elif row ==3 :
+                    rank = 6
+                elif row ==4 :
+                    rank = 5
+                elif row ==5 :
+                    rank = 4
+                elif row ==6 :
+                    rank = 3
+                elif row ==7 :
+                    rank = 2
+                elif row ==8 :
+                    rank = 1
+            
+
+                if col == 1 :
+                    file = "a"
+                elif col ==2 :
+                    file = "b"
+                elif col ==3 :
+                    file = "c"
+                elif col ==4 :
+                    file = "d"
+                elif col ==5 :
+                    file = "e"
+                elif col ==6 :
+                    file = "f"
+                elif col ==7 :
+                    file = "g"
+                elif col ==8 :
+                    file = "h"
+        
+                return file + str(rank)

@@ -1,4 +1,5 @@
 
+import copy
 import time
 from Piece import Piece
 import pygame
@@ -14,6 +15,20 @@ class King(Piece):
         self.check = False
         self.checkmate = False
         self.shorten = "K"
+        self.castle = True
+        self.canQcastle = False
+        self.canKcastle = False
+        
+        if self.color == "white" :
+            self.castleHousesQ = [[8,4] , [8,3] ,[8,2]]
+        else :
+            self.castleHousesQ = [[1,4] , [1,3] ,[1,2]]
+            
+        if self.color == "white" :
+            self.castleHousesK = [[8,6] , [8,7]]
+        else :
+            self.castleHousesK = [[1,6] , [1,7]]
+        
         
     def Draw(self) :
         if not self.isDead :
@@ -47,10 +62,57 @@ class King(Piece):
                         pass
                     
             if not ignoreCheck :       
-                    self.CheckValidMoves(self.validMoves) 
-         
+                    self.CheckValidMoves(self.validMoves)
+                    
+                    castleValMove = self.CastleCheck()   
+                    
+                    if castleValMove != None :
+                        for validCastle in castleValMove :
+                            self.validMoves.append(validCastle)
+                        
+            
             return self.validMoves 
     
+    def CastleCheck(self) :
+        if self.castle :
+            if Piece.Check() != self.color :
+                 result = [] 
+                 
+                 startingPoint = copy.deepcopy( [self.row , self.column])
+                 
+                 if Board.getPieceOnGivenSquare(self.castleHousesQ[0][0] , self.castleHousesQ[0][1]) == None and  Board.getPieceOnGivenSquare(self.castleHousesQ[1][0] , self.castleHousesQ[1][1]) == None and Board.getPieceOnGivenSquare(self.castleHousesQ[2][0] , self.castleHousesQ[2][1]) == None :
+                    canCastle = True
+                    for i in range(2) :
+                         self.Move(self.castleHousesQ[i] , False)
+                         if Piece.Check() == self.color :
+                            canCastle = False       
+                         self.Move(startingPoint , False)
+                         
+                    Piece.Check()
+                    
+                    if canCastle :
+                        result.append(self.castleHousesQ[1])
+                        self.canQcastle = True
+                        
+                    
+                 if Board.getPieceOnGivenSquare(self.castleHousesK[0][0] , self.castleHousesK[0][1]) == None and  Board.getPieceOnGivenSquare(self.castleHousesK[1][0] , self.castleHousesK[1][1]) == None  :
+                    canCastle = True
+                    for house in self.castleHousesK :
+                         self.Move(house , False)
+                         if Piece.Check() == self.color :
+                            canCastle = False       
+                         self.Move(startingPoint , False)
+                         
+                    Piece.Check()
+                    
+                    if canCastle :
+                        result.append(self.castleHousesK[1])
+                        self.canKcastle = True
+                        
+                 print(result)
+                 return result           
+                    
+            
    
     def Checkmate(self):
         if self.check and Board.turn != self.color :

@@ -80,9 +80,9 @@ rook_B_img = pygame.transform.scale(rook_B_img , (60,60) )
     
     
 #white pieces initializeation   
-queen_W = Queen("queen" , "white" , queen_W_img ,[5 , 5] )
+queen_W = Queen("queen" , "white" , queen_W_img ,[8 , 4] )
     
-king_W = King("king" , "white" , king_W_img ,[8 , 4]) 
+king_W = King("king" , "white" , king_W_img ,[8 , 5]) 
     
 bishop_WL = Bishop("bishop" , "white" , bishop_W_img ,[8 , 3] )
 bishop_WR = Bishop("bishop" , "white" , bishop_W_img ,[8 , 6] )
@@ -92,7 +92,9 @@ knight_WR = Knight("knight" , "white" , knight_W_img ,[8 , 7])
     
 rook_WL = Rook("rook" , "white" , rook_W_img ,[8 , 1] )
 rook_WR = Rook("rook" , "white" , rook_W_img ,[8 , 8] )
-    
+Board.rookWL =  rook_WL
+Board.rookWR = rook_WR
+
 pawn_W1 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 1])
 pawn_W2 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 2])
 pawn_W3 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 3])
@@ -108,9 +110,9 @@ pawn_W8 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 8])
 whitePieces = [queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W1 ,pawn_W2,pawn_W3,pawn_W4,pawn_W5,pawn_W6,pawn_W7,pawn_W8 , rook_WL , rook_WR ]
   
 #black pieces initializeation   
-queen_B = Queen("queen" , "black" , queen_B_img ,[1 , 5] )
+queen_B = Queen("queen" , "black" , queen_B_img ,[1 , 4] )
     
-king_B = King("king" , "black" , king_B_img ,[1 , 4]) 
+king_B = King("king" , "black" , king_B_img ,[1 , 5]) 
     
 bishop_BL = Bishop("bishop" , "black" , bishop_B_img ,[1 , 3])
 bishop_BR = Bishop("bishop" , "black" , bishop_B_img ,[1 , 6])
@@ -120,7 +122,8 @@ knight_BR = Knight("knight" , "black" , knight_B_img ,[1 , 7])
     
 rook_BL = Rook("rook" , "black" , rook_B_img ,[1 , 1])
 rook_BR = Rook("rook" , "black" , rook_B_img ,[1 , 8])
-    
+Board.rookBL =  rook_BL
+Board.rookBR = rook_BR
 pawn_B1 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 1])
 pawn_B2 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 2])
 pawn_B3 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 3])
@@ -151,11 +154,11 @@ def DrawPieces():
     for piece in Board.pieces :   
             piece.Draw()
             
-    for pieceW in Board.whiteSideDead :
-        pieceW.DrawDeadW()
+    #for pieceW in Board.whiteSideDead :
+    #    pieceW.DrawDeadW()
         
-    for pieceB in Board.blackSideDead :
-        pieceB.DrawDeadB()
+    #for pieceB in Board.blackSideDead :
+    #    pieceB.DrawDeadB()
        
 #run loop 
 def Counter() :
@@ -195,9 +198,12 @@ while Board.run :
              if piece is None :                
                 targetPiece = Board.selectedPiece 
                 if targetPiece :          
-                     targetPiece.Move(rowCol)
                      
-                     Board.saveLog(targetPiece , targetPiece.FileRank(rowCol), King.Check() ) 
+                     if rowCol in targetPiece.MovementSelection() :
+                           Board.saveLog(targetPiece , targetPiece.FileRank(rowCol), Piece.Check() , Piece.CheckMate() ) 
+                           
+                     targetPiece.Move(rowCol) 
+                     
                      
                                           
              elif not piece.selected and Board.turn == piece.color :   
@@ -215,10 +221,11 @@ while Board.run :
     #king_B.check = king_B.Check() 
     #king_W.check = king_W.Check() 
     Counter()
+    
     #king_W.Checkmate() 
     #king_B.Checkmate() 
     pygame.display.flip()
-    print(mouse.get_position() )
+    #print(mouse.get_position() )
        
 pygame.quit()
 
