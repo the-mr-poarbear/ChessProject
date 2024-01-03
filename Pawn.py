@@ -13,6 +13,7 @@ class Pawn(Piece):
             self.patterns =  [[-1,0]]
         self.firstMove = True
         self.enPassant = False
+        self.canBeEnPa = True
         
      def MovementSelection(self , ignoreCheck = False) :
           self.validMoves = [] 
@@ -20,25 +21,18 @@ class Pawn(Piece):
           for pattern in self.patterns:
                 
                  if self.firstMove : 
-                     tempRow = self.row
-                     tempCol =  self.column
-                     for i in range(2) :
-                          
-                             tempRow += pattern[0]  
-                             tempCol += pattern[1]   
-                             self.PawnHandling(ignoreCheck)
-                           
-                            
-                             if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
-                                pass
-                     
-                             elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
-                                 
-                                 self.validMoves.append([tempRow,tempCol])
-                             else :
-                                 break
+                    self.canBeEnPa = True
+                    self.PawnHandling(ignoreCheck)
+                    if self.color == "white" :       
+                        self.validMoves.append([self.row - 1 , self.column])
+                        self.validMoves.append([self.row - 2 , self.column])
+                    else : 
+                        self.validMoves.append([self.row + 1 , self.column])
+                        self.validMoves.append([self.row + 2 , self.column]) 
+                         
                         
                  else :
+                     self.canBeEnPa = False
                      tempRow = self.row
                      tempCol =  self.column
                      tempRow += pattern[0]  
@@ -65,16 +59,16 @@ class Pawn(Piece):
          
         
         if self.color == "white" :
-              if self.enPassant  :
+              
                    
-                    left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
-                    right = Board.getPieceOnGivenSquare(self.row , self.column + 1)  
-                    if left != None and left.tag == "pawn" :
+              left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
+              right = Board.getPieceOnGivenSquare(self.row , self.column + 1)  
+              if left != None and left.tag == "pawn" and left.enPassant :
                         
-                        self.validMoves.append([self.row -1 , self.column -1])
-                    if right != None and right.tag == "pawn" :
+                    self.validMoves.append([self.row -1 , self.column -1])
+              if right != None and right.tag == "pawn" and right.enPassant :
                         
-                        self.validMoves.append([self.row -1 , self.column +1]) 
+                    self.validMoves.append([self.row -1 , self.column +1]) 
                         
                     
                     
@@ -90,14 +84,14 @@ class Pawn(Piece):
                             
         elif  self.color == "black" :
             
-              if self.enPassant  :
+             
                     
-                    left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
-                    right = Board.getPieceOnGivenSquare(self.row , self.column + 1)  
-                    if left != None and left.tag == "pawn" :
-                        self.validMoves.append([self.row +1 , self.column -1])
-                    if right != None and right.tag == "pawn" :
-                        self.validMoves.append([self.row +1 , self.column +1])
+              left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
+              right = Board.getPieceOnGivenSquare(self.row , self.column + 1)  
+              if left != None and left.tag == "pawn" and left.enPassant :
+                    self.validMoves.append([self.row +1 , self.column -1])
+              if right != None and right.tag == "pawn" and right.enPassant :
+                    self.validMoves.append([self.row +1 , self.column +1])
                         
                    
                      

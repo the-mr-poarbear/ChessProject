@@ -50,7 +50,7 @@ class Piece:
        
                         
     def Move(self , rowCol , doMove = True) :
-        saveLog = True
+        
         if doMove :
             for validMove in self.validMoves :
                  
@@ -60,19 +60,19 @@ class Piece:
                     self.row = rowCol[0]
                     self.column = rowCol[1] 
                     
-                    if self.tag == "pawn" and self.color == "white" and self.enPassant :
+                    if self.tag == "pawn" and self.color == "white"  :
                         piece = Board.getPieceOnGivenSquare(validMove[0] +1 , validMove[1])
-                        if piece != None and piece.tag == "pawn" and piece.color != self.color :
-                            #Board.log.pop() 
+                        if piece != None and piece.tag == "pawn" and piece.color != self.color and piece.enPassant :
+                            Board.log.pop() 
                             Board.saveLog(self , self.FileRank(rowCol) , Piece.Check() , Piece.CheckMate() , True , fr)
                             Board.Remove(piece) 
                             Piece.Check()
                             
                         self.enPassant = False
                         
-                    elif self.tag == "pawn" and self.color == "black" and self.enPassant :
+                    elif self.tag == "pawn" and self.color == "black" :
                         piece = Board.getPieceOnGivenSquare(validMove[0] - 1 , validMove[1])
-                        if piece != None and piece.tag == "pawn" and piece.color != self.color :
+                        if piece != None and piece.tag == "pawn" and piece.color != self.color and piece.enPassant :
                             Board.Remove(piece) 
                             Piece.Check()
                             
@@ -81,6 +81,8 @@ class Piece:
                     for piece in Board.pieces :
                         if piece.tag == "pawn" :
                             piece.enPassant = False
+                        if piece.tag == "pawn" and piece.color != self.color :
+                            piece.canBeEnPa = False
                     
                     if self.tag == "king" and validMove == self.castleHousesQ[1] and self.canQcastle :
                         #print("goox")
@@ -125,9 +127,9 @@ class Piece:
                              left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
                              right = Board.getPieceOnGivenSquare(self.row , self.column + 1) 
                              if left != None and left.tag == "pawn" and left.color != self.color :
-                                 left.enPassant = True
+                                 self.enPassant = True
                              if right != None and right.tag == "pawn" and right.color != self.color :
-                                 right.enPassant = True
+                                 self.enPassant = True
                                  
                          self.firstMove = False
                          
