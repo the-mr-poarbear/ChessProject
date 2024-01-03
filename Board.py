@@ -5,6 +5,7 @@ import pygame
 
 
 
+
 from Stack import Stack
 
 class Board:
@@ -25,6 +26,7 @@ class Board:
     selectedPiece = None
     king = []
     turn = "white"
+    
     # num , piece , captured sign ,destination , checkOrCheckmate 
     log = []
     timer = time.time()
@@ -68,11 +70,8 @@ class Board:
         print(checkmate)
         if piece.tag != "pawn" :
             
-            if piece.tag == "king":
-                print("hi")
-                print(piece.canQcastle)
-                print(destination )
             if piece.tag == "king" and destination == Board.FileRank(piece.castleHousesQ[1]) and piece.canQcastle :
+                 
                  Board.log.append("O-O-O")
                  piece.canQcastle = False
             elif piece.tag == "king" and destination == Board.FileRank(piece.castleHousesK[1]) and piece.canKcastle  :
@@ -208,7 +207,7 @@ class Board:
                 break
              
         piece.isDead = True
-        piece.sprite = pygame.transform.scale(piece.sprite , (30,30) )
+        #piece.sprite = pygame.transform.scale(piece.sprite , (30,30) )
           
             
 
@@ -252,7 +251,74 @@ class Board:
                     file = "h"
         
                 return file + str(rank)
+    
+    def Undo() :
+        if not Board.undo.IsEmpty() :
+            node = Board.undo.Pop()
+            node.movedPiece.row = node.startingPoint[0]
+            node.movedPiece.column = node.startingPoint[1]
+        
+            if node.movedPiece.tag == "pawn" :
+                node.movedPiece.firstMove = node.firstMove
+            elif node.movedPiece.tag == "king" :
+
+                 if node.castleQ :
+                     if node.castleQ.color == "white" :
+                         
+                         Board.rookWL.column -= 3
+                     else :
+                         Board.rookBL.column -= 3
+                 elif node.castleK :
+                     if node.castleK.color == "white" :
+                         
+                         Board.rookWR.column += 2
+                     else :
+                         Board.rookBR.column += 2
+                     
+         
+            if node.captured != None :
+                node.captured.isDead = False
+                Board.pieces.append(node.captured)
+                #node.captured.sprite = pygame.transform.scale(node.captured.sprite , (60,60))
             
+            Board.redo.Push(node)
+            Board.Check()
+            Board.SwitchTurn()
+            #dont forget to return the dead and add it to Board.pieces otherwise theyl stay ghosty
+
+    def Redo() :
+        if not Board.redo.IsEmpty() :
+            
+            node = Board.redo.Pop()
+            node.movedPiece.row = node.destination[0]
+            node.movedPiece.column = node.destination[1]
+        
+            if node.movedPiece.tag == "pawn" :
+                node.movedPiece.firstMove = False
+            elif node.movedPiece.tag == "king" :
+
+                 if node.castleQ :
+                     if node.castleQ.color == "white" :
+                         
+                         Board.rookWL.column += 3
+                     else :
+                         Board.rookBL.column += 3
+                 elif node.castleK :
+                     if node.castleK.color == "white" :
+                         
+                         Board.rookWR.column -= 2
+                     else :
+                         Board.rookBR.column -= 2
+            if node.captured != None :
+                node.captured.isDead = True
+                Board.pieces.remove(node.captured)
+                #node.captured.sprite = pygame.transform.scale(node.captured.sprite , (60,60))
+            
+            Board.undo.Push(node)
+            Board.Check()
+            Board.SwitchTurn()
+            
+        
     def Check():
         
         if Board.king[0].color == "white" :

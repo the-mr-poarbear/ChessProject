@@ -1,4 +1,5 @@
 import copy
+from TransitionNode import TransitionNode
 from Piece import Piece
 import pygame
 from Board import Board
@@ -16,15 +17,17 @@ class Pawn(Piece):
         self.enPassant = False
         self.canBeEnPa = True
         
-     def Move (self ,rowCol , doMove = True) :
+     def Move (self ,rowCol , doMove = True  ,captured = None) :
          if doMove :
             for validMove in self.validMoves :
                  
                  if validMove == rowCol :
-                    fr = copy.deepcopy(self.FileRank([self.row , self.column]))
                     
+                    fr = copy.deepcopy(self.FileRank([self.row , self.column]))
+                    startingPoint = copy.deepcopy([self.row , self.column])
                     self.row = rowCol[0]
                     self.column = rowCol[1] 
+                    
                     
                     if self.tag == "pawn" and self.color == "white"  :
                         piece = Board.getPieceOnGivenSquare(validMove[0] +1 , validMove[1])
@@ -32,15 +35,22 @@ class Pawn(Piece):
                             Board.log.pop() 
                             Board.saveLog(self , self.FileRank(rowCol) , True , fr)
                             Board.Remove(piece) 
+                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = piece )) 
                             Board.Check()
+
+                        else :
+                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = captured )) 
                             
                         self.enPassant = False
                         
                     elif self.tag == "pawn" and self.color == "black" :
                         piece = Board.getPieceOnGivenSquare(validMove[0] - 1 , validMove[1])
                         if piece != None and piece.tag == "pawn" and piece.color != self.color and piece.enPassant :
-                            Board.Remove(piece) 
+                            Board.Remove(piece)
+                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = piece )) 
                             Board.Check()
+                        else :
+                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = captured )) 
                             
                         self.enPassant = False
                         
@@ -62,7 +72,10 @@ class Pawn(Piece):
                                      self.enPassant = True
                                  
                              self.firstMove = False
-                         
+                             
+                    while not Board.redo.IsEmpty() :
+                        Board.redo.Pop() 
+                        
                     Board.SwitchTurn()
                     self.selected = False
              

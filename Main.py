@@ -190,6 +190,17 @@ while Board.run :
     for event in pygame.event.get():
         if event.type == pygame.QUIT :
             Board.run = False
+            
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_z:
+                print("Key A has been pressed")
+                Board.Undo()
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_r:
+                print("Key A has been pressed")
+                Board.Redo()
         if event.type == pygame.MOUSEBUTTONDOWN :
              #print(pygame.mouse.get_pos[0]) 
             # (x,y) = 
@@ -203,11 +214,7 @@ while Board.run :
                      if rowCol in gi :
                            targetPiece.Move(rowCol)   
                            Board.saveLog(targetPiece , targetPiece.FileRank(rowCol) ) 
-                          
-                           
-                     
-                     
-                     
+                                  
                                           
              elif not piece.selected and Board.turn == piece.color :   
                 Board.selectPiece(piece)

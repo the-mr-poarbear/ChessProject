@@ -4,6 +4,7 @@ import copy
 from ctypes.wintypes import RGB
 import pygame
 from Board import Board
+from TransitionNode import TransitionNode
 
 
 
@@ -49,18 +50,22 @@ class Piece:
    
        
                         
-    def Move(self , rowCol , doMove = True) :
+    def Move(self , rowCol , doMove = True , captured = None) :
         
         if doMove :
             for validMove in self.validMoves :
                  
                  if validMove == rowCol :
+                    startingPoint = copy.deepcopy([self.row , self.column])
+                    
                     fr = copy.deepcopy(self.FileRank([self.row , self.column]))
                     
                     self.row = rowCol[0]
                     self.column = rowCol[1] 
                     
-                   
+                    Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove ,captured = captured))
+                    while not Board.redo.IsEmpty() :
+                        Board.redo.Pop()
                     
                         
                     for piece in Board.pieces :
@@ -110,7 +115,7 @@ class Piece:
 
                     fr = copy.deepcopy(self.FileRank([self.row , self.column]))
                     #print(fr)
-                    self.Move([opPiece.row , opPiece.column]) 
+                    self.Move([opPiece.row , opPiece.column] , captured = opPiece ) 
                     Board.saveLog (self  , self.FileRank(validMove) , captured=  True  , lastFR = fr )
                     
                     self.selected = False 
@@ -187,57 +192,4 @@ class Piece:
         
             return file + str(rank)
     
-    def Check():
-        
-        if Board.king[0].color == "white" :
-                kingW =  Board.king[0]
-                kingB = Board.king[1]
-        else :
-                kingB =  Board.king[0]
-                kingW = Board.king[1] 
-                
-        for piece in Board.pieces : 
-            if not piece.isDead :
-                if piece.color == "black" :
-                    tempMoves = copy.deepcopy(piece.MovementSelection(ignoreCheck = True) )
-          
-                    for tempMove2 in tempMoves :
-                        if tempMove2 == [kingW.row , kingW.column] :
-                            #print("white check")
-                            kingW.check = True
-                            return "white"
-                    kingW.check = False
-                   
-                elif piece.color == "white" : 
-                
-                    tempMoves2 = copy.deepcopy(piece.MovementSelection(ignoreCheck = True) )
-                    for tempMove in tempMoves2 :
-                        if tempMove == [kingB.row , kingB.column] :
-                            #print("black check")
-                            kingB.check = True
-                            return "black" 
-                    
-                    kingB.check = False
     
-    def CheckMate() :
-        
-        if Board.Check() == "white" and Board.turn == "white" :
-            
-            moves = []
-            for piece in Board.pieces :
-                if piece.color == "white" :
-                   moves += piece.MovementSelection()
-            
-            if moves == [] :
-                print("Black Won")
-                #Board.run = False
-                return "white"
-        elif Board.Check() == "black" and Board.turn == "black" :
-            moves = []
-            for piece in Board.pieces :
-                if piece.color == "black" :
-                   moves += piece.MovementSelection()
-            if moves == []:
-                print("White Won")
-                #Board.run = False
-                return "black"

@@ -1,6 +1,7 @@
 
 import copy
 import time
+from TransitionNode import TransitionNode
 from Piece import Piece
 import pygame
 from Board import Board
@@ -30,33 +31,38 @@ class King(Piece):
             self.castleHousesK = [[1,6] , [1,7]]
         
      
-    def Move(self , rowCol , doMove = True) :
+    def Move(self , rowCol , doMove = True ,captured = None) :
         if doMove :
             print("hi") 
 
             for validMove in self.validMoves :
                  print(validMove , rowCol)
                  if validMove == rowCol :
-
+                    startingPoint = copy.deepcopy([self.row , self.column])
                     self.row = rowCol[0]
                     self.column = rowCol[1] 
-                 
+                    
+                    
                     if self.tag == "king" and validMove == self.castleHousesQ[1] and self.canQcastle :
                         #print("goox")
                         if self.color == "white" :
                             targetRook = Board.rookWL
+                            
                         else :
                             targetRook = Board.rookBL
-                        
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleQ = targetRook))   
                         targetRook.column += 3
+                        
                     elif self.tag == "king" and validMove == self.castleHousesK[1] and self.canKcastle  :
                         
                         if self.color == "white" :
                             targetRook = Board.rookWR
                         else :
                             targetRook = Board.rookBR
-                        
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleK = targetRook))
                         targetRook.column -= 2
+                    else :
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured ) )
                         
                     for piece in Board.pieces :
                         if piece.tag == "pawn" :
@@ -79,6 +85,9 @@ class King(Piece):
                                 if king.color == "black" :
                                     king.castle = False
                                     
+                    while not Board.redo.IsEmpty() :
+                        Board.redo.Pop()
+                        
                     Board.SwitchTurn()
                     self.selected = False
              
