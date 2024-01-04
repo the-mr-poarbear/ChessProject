@@ -140,6 +140,7 @@ blackPieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL 
 
 screen = Board.screen
 pygame.display.set_caption("Data Structure Project Chess Game")
+smallfont = pygame.font.Font("freesansbold.ttf" , 20)
 font = pygame.font.Font("freesansbold.ttf" , 30)
 bigFont = pygame.font.Font("freesansbold.ttf" , 50)
 veryBigFont = pygame.font.Font("freesansbold.ttf" , 120)
@@ -182,11 +183,38 @@ def Counter() :
     if now - Board.timer >= 30 :
         Board.SwitchTurn()
     
+def DrawLog() :
+    
+    x_start = Board.startingPoint[0] + 10 * Board.sideOfTheSquare
+    y_start = Board.startingPoint[1] + 3.5 * Board.sideOfTheSquare
+    x_end = Board.startingPoint[0] + 13 * Board.sideOfTheSquare
+    
+    
+    x = x_start
+    y = y_start
+    
+    
+    words = Board.logTxt.split(",")
+
+    for word in words:
+        word_t = smallfont.render(word, True, "white")
+        if word_t.get_width() + x <= x_end:
+            Board.screen.blit(word_t, (x, y))
+            x += word_t.get_width() * 1.1
+        else:
+            y += word_t.get_height() * 1.1
+            x = x_start
+            Board.screen.blit(word_t, (x, y))
+            x += word_t.get_width() * 1.
+   
+    
+        
 while Board.run : 
     timer.tick(fps)
     
     screen.blit(Board.board ,(0,0))
     DrawPieces()
+    DrawLog()
     for event in pygame.event.get():
         if event.type == pygame.QUIT :
             Board.run = False
@@ -235,7 +263,7 @@ while Board.run :
     #king_W.Checkmate() 
     #king_B.Checkmate() 
     pygame.display.flip()
-    #print(mouse.get_position() )
+   # print(mouse.get_position() )
        
 pygame.quit()
 

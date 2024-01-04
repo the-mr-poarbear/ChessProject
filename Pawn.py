@@ -16,6 +16,7 @@ class Pawn(Piece):
         self.firstMove = True
         self.enPassant = False
         self.canBeEnPa = True
+        self.secondMove = False
         
      def Move (self ,rowCol , doMove = True  ,captured = None) :
          if doMove :
@@ -72,7 +73,9 @@ class Pawn(Piece):
                                      self.enPassant = True
                                  
                              self.firstMove = False
-                             
+                             self.secondMove = True
+                    if self.secondMove :
+                        secondMove = False 
                     while not Board.redo.IsEmpty() :
                         Board.redo.Pop() 
                         
@@ -96,12 +99,16 @@ class Pawn(Piece):
                  if self.firstMove : 
                     self.canBeEnPa = True
                     self.PawnHandling(ignoreCheck)
-                    if self.color == "white" :       
-                        self.validMoves.append([self.row - 1 , self.column])
-                        self.validMoves.append([self.row - 2 , self.column])
+                    if self.color == "white" :   
+                        if Board.getPieceOnGivenSquare(self.row - 1 , self.column) is None :
+                            self.validMoves.append([self.row - 1 , self.column])
+                            if Board.getPieceOnGivenSquare(self.row - 2 , self.column) is None :
+                                self.validMoves.append([self.row - 2 , self.column])
                     else : 
-                        self.validMoves.append([self.row + 1 , self.column])
-                        self.validMoves.append([self.row + 2 , self.column]) 
+                        if Board.getPieceOnGivenSquare(self.row + 1 , self.column) is None :
+                            self.validMoves.append([self.row + 1 , self.column])
+                            if Board.getPieceOnGivenSquare(self.row + 2 , self.column) is None :
+                                self.validMoves.append([self.row + 2 , self.column]) 
                          
                         
                  else :

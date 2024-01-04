@@ -10,7 +10,7 @@ from Stack import Stack
 
 class Board:
     
-    
+    logTxt = ""
     won = ""
     startingPoint = [560,140]
     sideOfTheSquare = 100
@@ -48,11 +48,16 @@ class Board:
     rookWR = None 
     undo = Stack()
     redo = Stack()
+    undoLog = Stack()
+    redoLog = Stack()
     def __init__(self) :
         
         pass
     
     def saveLog(piece ,destination , captured = False  ,lastFR = []):
+        
+        while not Board.redoLog.IsEmpty():
+            Board.redoLog.Pop()   
         
         color = Board.Check()
         if color != None and color != piece.color :
@@ -134,22 +139,21 @@ class Board:
                         Board.log.append("1-0") 
                     else :
                         Board.log.append("0-1") 
-          
+        Board.undoLog.Push(Board.log[len(Board.log)-1]) 
         Board.PrintLog() 
         
             
     def PrintLog() :
+        Board.logTxt = ""
         num = 0
         for i in range (len(Board.log)) :
             if i%2 == 0 :
                 num +=1   
-                print(str(num) + ". ")
+                print(" " + str(num) + ".")
+                Board.logTxt += (" " + str(num) + ". ")
                 
             print(Board.log[i])   
-            
-                          
-    def Undo():
-        pass
+            Board.logTxt += ( Board.log[i] + ",")
     
     def getPieceOnGivenSquare( row , column) :     
 
@@ -254,6 +258,7 @@ class Board:
     
     def Undo() :
         if not Board.undo.IsEmpty() :
+
             node = Board.undo.Pop()
             node.movedPiece.row = node.startingPoint[0]
             node.movedPiece.column = node.startingPoint[1]
@@ -280,10 +285,13 @@ class Board:
                 node.captured.isDead = False
                 Board.pieces.append(node.captured)
                 #node.captured.sprite = pygame.transform.scale(node.captured.sprite , (60,60))
-            
+            Board.redoLog.Push(Board.log.pop())
+            print("hubji")
+            print(Board.undoLog.IsEmpty())
             Board.redo.Push(node)
             Board.Check()
             Board.SwitchTurn()
+            Board.PrintLog()
             #dont forget to return the dead and add it to Board.pieces otherwise theyl stay ghosty
 
     def Redo() :
@@ -295,6 +303,14 @@ class Board:
         
             if node.movedPiece.tag == "pawn" :
                 node.movedPiece.firstMove = False
+                if node.movedPiece.secondMove and node.movedPiece.row == 5 or node.movedPiece.row == 4 :
+                    left = Board.getPieceOnGivenSquare(node.movedPiece.row , node.movedPiece.column - 1)
+                    right = Board.getPieceOnGivenSquare(node.movedPiece.row , node.movedPiece.column + 1) 
+                    if left != None and left.tag == "pawn" and left.color != node.movedPiece.color :
+                        node.movedPiece.enPassant = True
+                    if right != None and right.tag == "pawn" and right.color != node.movedPiece.color :
+                        node.movedPiece.enPassant = True
+                        
             elif node.movedPiece.tag == "king" :
 
                  if node.castleQ :
@@ -313,11 +329,12 @@ class Board:
                 node.captured.isDead = True
                 Board.pieces.remove(node.captured)
                 #node.captured.sprite = pygame.transform.scale(node.captured.sprite , (60,60))
-            
+                #remember to add the dead in white or blackside graves
+            Board.log.append(Board.redoLog.Pop())
             Board.undo.Push(node)
             Board.Check()
             Board.SwitchTurn()
-            
+            Board.PrintLog()
         
     def Check():
         
@@ -374,3 +391,5 @@ class Board:
                 print("White Won")
                 #Board.run = False
                 return "black"
+            
+    
