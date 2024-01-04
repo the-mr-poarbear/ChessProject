@@ -297,7 +297,22 @@ class Board:
             elif node.movedPiece.tag == "king" :
                  
                  node.movedPiece.firstMove = node.firstMove 
-                 
+                 node.movedPiece.castle = node.firstMove  #ya its right!.. frist move
+                 if node.firstMove :
+                     if node.movedPiece.color == "white" :
+                         if Board.rookWR.firstMove and [Board.rookWR.row , Board.rookWR.column] == [8 , 8] :
+                            Board.whiteKingsideCastle = True  
+                         if Board.rookWL.firstMove and [Board.rookWL.row , Board.rookWL.column] == [8 , 1] :
+                            Board.whiteQueensideCastle = True  
+                     else :
+                         
+                         if Board.rookBR.firstMove and [Board.rookBR.row , Board.rookBR.column] == [1 , 8] :
+                            Board.blackKingsideCastle = True  
+                         if Board.rookBL.firstMove and [Board.rookBL.row , Board.rookBL.column] == [1 , 1] :
+                            Board.blackQueensideCastle = True  
+                         
+                       
+
                  if node.castleQ :
                      #node.movedPiece.
                      if node.castleQ.color == "white" :                     
@@ -367,7 +382,7 @@ class Board:
                         node.movedPiece.enPassant = True
                         
             elif node.movedPiece.tag == "king" :
-
+                 
                  if node.castleQ :
                      if node.castleQ.color == "white" :
                          

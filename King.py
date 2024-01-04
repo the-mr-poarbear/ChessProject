@@ -60,10 +60,10 @@ class King(Piece):
                             targetRook = Board.rookWR
                         else :
                             targetRook = Board.rookBR
-                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleK = targetRook , firstMove= self.firstMove))
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleK = targetRook , firstMove= self.castle))
                         targetRook.column -= 2
                     else :
-                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured ,firstMove= self.firstMove) )
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured ,firstMove= self.castle) )
                         
                     for piece in Board.pieces :
                         if piece.tag == "pawn" :
