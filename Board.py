@@ -208,6 +208,10 @@ class Board:
             if Board.pieces[i] == piece :
                 print("hi")
                 Board.pieces.pop(i)
+                if piece.color =="white" :
+                    Board.whiteSideDead.append(piece)
+                else :
+                     Board.blackSideDead.append(piece)
                 break
              
         piece.isDead = True
@@ -263,24 +267,75 @@ class Board:
             node.movedPiece.row = node.startingPoint[0]
             node.movedPiece.column = node.startingPoint[1]
         
-            if node.movedPiece.tag == "pawn" :
+            if node.movedPiece.tag == "pawn"  :
                 node.movedPiece.firstMove = node.firstMove
-            elif node.movedPiece.tag == "king" :
+                
+            elif node.movedPiece.tag == "rook" :
+                node.movedPiece.firstMove = node.firstMove
+                
+                if node.firstMove :
+                    rook = node.movedPiece
+                    
+                    for king in Board.king :
+                       if rook.color == king.color and king.castle :
+                           print("brr")
+                           #king.castle = True           
+                           if rook == Board.rookWL :
+                               Board.whiteQueensideCastle = True
+                           elif rook == Board.rookBL :
+                               Board.blackQueensideCastle = True 
+                               
+                           elif rook == Board.rookWR : 
+                               print("brrrrr")
+                               Board.whiteKingsideCastle = True
+                           elif rook == Board.rookBR :
+                               Board.blackKingsideCastle = True  
+                               
 
+                        
+                    
+            elif node.movedPiece.tag == "king" :
+                 
+                 node.movedPiece.firstMove = node.firstMove 
+                 
                  if node.castleQ :
-                     if node.castleQ.color == "white" :
-                         
+                     #node.movedPiece.
+                     if node.castleQ.color == "white" :                     
                          Board.rookWL.column -= 3
-                     else :
+                         Board.rookWL.firstMove = True
+                         Board.whiteQueensideCastle = True
+                         if Board.rookWR.firstMove and [Board.rookWR.row , Board.rookWR.column] == [8 , 8] :
+                            Board.whiteKingsideCastle = True   
+                             
+                         
+                     else :                   
                          Board.rookBL.column -= 3
+                         Board.rookBL.firstMove = True
+                         Board.blackQueensideCastle = True
+                         if Board.rookBR.firstMove and [Board.rookBR.row , Board.rookBR.column] == [1 , 8] :
+                            Board.blackKingsideCastle = True  
+                            
+                     node.movedPiece.canQcastle = True
+                     node.movedPiece.castle = True
+                     
                  elif node.castleK :
                      if node.castleK.color == "white" :
-                         
+                         print("all in")
                          Board.rookWR.column += 2
+                         Board.rookWR.firstMove = True
+                         Board.whiteKingsideCastle = True
+                         if Board.rookWL.firstMove and [Board.rookWL.row , Board.rookWL.column] == [8 , 1] :
+                            Board.whiteQueensideCastle = True  
                      else :
                          Board.rookBR.column += 2
+                         Board.rookBR.firstMove = True
+                         Board.blackKingsideCastle = True
+                         if Board.rookBL.firstMove and [Board.rookBL.row , Board.rookBL.column] == [1 , 1] :
+                            Board.blackQueensideCastle = True  
+                         
+                     node.movedPiece.canKcastle = True
+                     node.movedPiece.castle = True
                      
-         
             if node.captured != None :
                 node.captured.isDead = False
                 Board.pieces.append(node.captured)
@@ -381,6 +436,7 @@ class Board:
             if moves == [] :
                 print("Black Won")
                 #Board.run = False
+                Board.won = "black"
                 return "white"
         elif Board.Check() == "black" and Board.turn == "black" :
             moves = []
@@ -389,6 +445,7 @@ class Board:
                    moves += piece.MovementSelection()
             if moves == []:
                 print("White Won")
+                Board.won = "white"
                 #Board.run = False
                 return "black"
             

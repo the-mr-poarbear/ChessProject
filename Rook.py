@@ -7,6 +7,7 @@ class Rook(Piece):
         super().__init__( tag , color , sprite , rowCol )
         self.patterns = [[0,1] , [1,0] , [-1,0] , [0,-1]]
         self.shorten = "R"
+        self.firstMove = True
         
     def MovementSelection(self , ignoreCheck = False) :
          self.validMoves = [] 

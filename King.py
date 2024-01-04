@@ -11,7 +11,7 @@ class King(Piece):
     def __init__ (self , tag , color , sprite , rowCol ) :
         super().__init__( tag , color , sprite , rowCol)
         self.patterns = [[0,1] , [1,0] , [-1,0] , [0,-1] , [1,1] , [-1,-1] , [1,-1] , [-1,1] ]
-        self.cult = False
+        # # self.cult = False
         Board.king.append(self)
         self.check = False
         self.checkmate = False
@@ -19,6 +19,7 @@ class King(Piece):
         self.castle = True
         self.canQcastle = False
         self.canKcastle = False
+        self.firstMove = True
         
         if self.color == "white" :
             self.castleHousesQ = [[8,4] , [8,3] ,[8,2]]
@@ -34,7 +35,7 @@ class King(Piece):
     def Move(self , rowCol , doMove = True ,captured = None) :
         if doMove :
             print("hi") 
-
+            self.firstMove = False
             for validMove in self.validMoves :
                  print(validMove , rowCol)
                  if validMove == rowCol :
@@ -50,7 +51,7 @@ class King(Piece):
                             
                         else :
                             targetRook = Board.rookBL
-                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleQ = targetRook))   
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleQ = targetRook , firstMove= self.firstMove))   
                         targetRook.column += 3
                         
                     elif self.tag == "king" and validMove == self.castleHousesK[1] and self.canKcastle  :
@@ -59,10 +60,10 @@ class King(Piece):
                             targetRook = Board.rookWR
                         else :
                             targetRook = Board.rookBR
-                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleK = targetRook))
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleK = targetRook , firstMove= self.firstMove))
                         targetRook.column -= 2
                     else :
-                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured ) )
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured ,firstMove= self.firstMove) )
                         
                     for piece in Board.pieces :
                         if piece.tag == "pawn" :
@@ -70,7 +71,7 @@ class King(Piece):
                         if piece.tag == "pawn" and piece.color != self.color :
                             piece.canBeEnPa = False   
                     
-                    if self.tag == "king" or self.tag == "rook":
+                    if self.tag == "king" :
                         if self.color == "white" and ( Board.whiteKingsideCastle or Board.whiteQueensideCastle) :
                             Board.whiteKingsideCastle = False   
                             Board.whiteQueensideCastle = False
@@ -128,55 +129,60 @@ class King(Piece):
                         pass
                     
             if not ignoreCheck :       
-                    self.CheckValidMoves(self.validMoves)
-                    
+  
                     castleValMove = self.CastleCheck()   
                     
                     if castleValMove != None :
                         for validCastle in castleValMove :
                             self.validMoves.append(validCastle)
+                            
+                    self.CheckValidMoves(self.validMoves)
                         
                     
             return self.validMoves 
     
     def CastleCheck(self) :
+        print("1")
         if self.castle :
+            print("2")
             if Board.Check() != self.color :
-                 result = [] 
-                 
-                 startingPoint = copy.deepcopy( [self.row , self.column])
-                 
-                 if Board.getPieceOnGivenSquare(self.castleHousesQ[0][0] , self.castleHousesQ[0][1]) == None and  Board.getPieceOnGivenSquare(self.castleHousesQ[1][0] , self.castleHousesQ[1][1]) == None and Board.getPieceOnGivenSquare(self.castleHousesQ[2][0] , self.castleHousesQ[2][1]) == None :
-                    canCastle = True
-                    for i in range(2) :
-                         self.Move(self.castleHousesQ[i] , False)
-                         if Board.Check() == self.color :
-                            canCastle = False       
-                         self.Move(startingPoint , False)
+                result = [] 
+                startingPoint = copy.deepcopy( [self.row , self.column])
+                print("5")
+                if (Board.blackQueensideCastle and self.color == "black") or (Board.whiteQueensideCastle and self.color == "white") :
+                     print("salam")
+                     if Board.getPieceOnGivenSquare(self.castleHousesQ[0][0] , self.castleHousesQ[0][1]) == None and  Board.getPieceOnGivenSquare(self.castleHousesQ[1][0] , self.castleHousesQ[1][1]) == None and Board.getPieceOnGivenSquare(self.castleHousesQ[2][0] , self.castleHousesQ[2][1]) == None :
+                        canCastle = True
+                        for i in range(2) :
+                             self.Move(self.castleHousesQ[i] , False)
+                             if Board.Check() == self.color :
+                                canCastle = False       
+                             self.Move(startingPoint , False)
                          
-                    Board.Check()
+                        Board.Check()
                     
-                    if canCastle :
-                        result.append(self.castleHousesQ[1])
-                        self.canQcastle = True
+                        if canCastle :
+                            result.append(self.castleHousesQ[1])
+                            self.canQcastle = True
                         
-                    
-                 if Board.getPieceOnGivenSquare(self.castleHousesK[0][0] , self.castleHousesK[0][1]) == None and  Board.getPieceOnGivenSquare(self.castleHousesK[1][0] , self.castleHousesK[1][1]) == None  :
-                    canCastle = True
-                    for house in self.castleHousesK :
-                         self.Move(house , False)
-                         if Board.Check() == self.color :
-                            canCastle = False       
-                         self.Move(startingPoint , False)
+                if (Board.blackKingsideCastle and self.color == "black") or (Board.whiteKingsideCastle and self.color == "white") : 
+                     print("in again")
+                     if Board.getPieceOnGivenSquare(self.castleHousesK[0][0] , self.castleHousesK[0][1]) == None and  Board.getPieceOnGivenSquare(self.castleHousesK[1][0] , self.castleHousesK[1][1]) == None  :
+                        canCastle = True
+                        for house in self.castleHousesK :
+                             self.Move(house , False)
+                             if Board.Check() == self.color :
+                                canCastle = False       
+                             self.Move(startingPoint , False)
                          
-                    Board.Check()
+                        Board.Check()
                     
-                    if canCastle :
-                        result.append(self.castleHousesK[1])
-                        self.canKcastle = True
+                        if canCastle :
+                            result.append(self.castleHousesK[1])
+                            self.canKcastle = True
                         
-                 print(result)
-                 return result           
+                print(result)
+                return result           
                     
             
    

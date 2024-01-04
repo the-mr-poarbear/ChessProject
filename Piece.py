@@ -62,8 +62,11 @@ class Piece:
                     
                     self.row = rowCol[0]
                     self.column = rowCol[1] 
-                    
-                    Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove ,captured = captured))
+                    if self.tag == "rook" :
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove ,captured = captured ,firstMove= self.firstMove))   
+                    else :
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove ,captured = captured))
+                        
                     while not Board.redo.IsEmpty() :
                         Board.redo.Pop()
                     
@@ -75,19 +78,20 @@ class Piece:
                             piece.canBeEnPa = False   
                     
                     if self.tag == "rook":
-                        if self.color == "white" and ( Board.whiteKingsideCastle or Board.whiteQueensideCastle) :
-                            Board.whiteKingsideCastle = False   
+                        self.firstMove = False
+                        if self.color == "white" and Board.whiteKingsideCastle and self == Board.rookWR  :
+                            Board.whiteKingsideCastle = False 
+                            
+                        elif self.color == "white" and Board.whiteQueensideCastle and self == Board.rookWL :
                             Board.whiteQueensideCastle = False
-                            for king in Board.king :
-                                if king.color == "white" :
-                                    king.castle = False
-                                    
-                        elif self.color == "black" and ( Board.blackKingsideCastle or Board.blackQueensideCastle) :
-                            Board.blackKingsideCastle = False   
-                            Board.blackQueensideCastle = False  
-                            for king in Board.king :
-                                if king.color == "black" :
-                                    king.castle = False
+                            
+                        elif self.color == "black" and Board.blackKingsideCastle and self == Board.rookBR :
+                            Board.blackKingsideCastle = False 
+                            
+                        elif self.color == "black" and Board.blackQueensideCastle and self == Board.rookBL :
+                            Board.blackQueensideCastle = False
+   
+                            
                     
                     Board.SwitchTurn()
                     self.selected = False
