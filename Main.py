@@ -1,7 +1,10 @@
 from ast import List
 import copy
+
+import random 
 from tabnanny import check
 import time
+from tkinter import W
 import pygame
 
 from Board import Board
@@ -39,71 +42,86 @@ state = 0
 #Board 
 board_img = pygame.image.load("ChessProject\Board\APossant.png")
     
-
+size = 50
 # White Pieces Sprite    
 queen_W_img = pygame.image.load("ChessProject\Pieces\WhitePieces\QueenW.png")
 queen_W_img = pygame.transform.scale(queen_W_img , (60,60) )
+queen_Ws_img = pygame.transform.scale(queen_W_img , (size,size) )
     
 bishop_W_img = pygame.image.load("ChessProject\Pieces\WhitePieces\BishopW.png")
 bishop_W_img = pygame.transform.scale(bishop_W_img ,(60,60) )
-    
+bishop_Ws_img = pygame.transform.scale(bishop_W_img ,(size,size) )  
+
 king_W_img = pygame.image.load("ChessProject\Pieces\WhitePieces\KingW.png")
 king_W_img = pygame.transform.scale(king_W_img , (60,60) )
-    
+king_Ws_img = pygame.transform.scale(king_W_img , (size,size) )
+
 knight_W_img = pygame.image.load("ChessProject\Pieces\WhitePieces\KnightW.png")
 knight_W_img = pygame.transform.scale(knight_W_img , (60,60))
+knight_Ws_img = pygame.transform.scale(knight_W_img ,(size,size))
     
 pawn_W_img = pygame.image.load("ChessProject\Pieces\WhitePieces\PawnW.png")
 pawn_W_img = pygame.transform.scale(pawn_W_img ,(60,60) )
+pawn_Ws_img = pygame.transform.scale(pawn_W_img ,(size,size) )
+
     
 rook_W_img = pygame.image.load("ChessProject\Pieces\WhitePieces\RookW.png")
 rook_W_img = pygame.transform.scale(rook_W_img , (60,60))
+rook_Ws_img = pygame.transform.scale(rook_W_img , (size,size))
     
    
 # Black Pieces Sprite
 queen_B_img = pygame.image.load("ChessProject\Pieces\BlackPieces\QueenB.png")
 queen_B_img = pygame.transform.scale(queen_B_img , (60,60) )
-    
+queen_Bs_img = pygame.transform.scale(queen_B_img , (size,size) )
+
 bishop_B_img = pygame.image.load("ChessProject\Pieces\BlackPieces\BishopB.png")
 bishop_B_img = pygame.transform.scale(bishop_B_img , (60,60) )
+bishop_Bs_img = pygame.transform.scale(bishop_B_img ,(size,size) )  
     
 king_B_img = pygame.image.load("ChessProject\Pieces\BlackPieces\Kingb.png")
 king_B_img = pygame.transform.scale(king_B_img , (60,60) )
+king_Bs_img = pygame.transform.scale(king_B_img , (size,size) )
     
 knight_B_img = pygame.image.load("ChessProject\Pieces\BlackPieces\KnightB.png")
 knight_B_img = pygame.transform.scale(knight_B_img , (60,60) )
+knight_Bs_img = pygame.transform.scale(knight_B_img , (size,size))
     
 pawn_B_img = pygame.image.load("ChessProject\Pieces\BlackPieces\PawnB.png")
 pawn_B_img = pygame.transform.scale(pawn_B_img , (60,60) )
+pawn_Bs_img = pygame.transform.scale(pawn_B_img ,(size,size) )
+
+
     
 rook_B_img = pygame.image.load("ChessProject\Pieces\BlackPieces\RookB.png")
 rook_B_img = pygame.transform.scale(rook_B_img , (60,60) )
+rook_Bs_img = pygame.transform.scale(rook_B_img , (size,size))
     
     
 #white pieces initializeation   
-queen_W = Queen("queen" , "white" , queen_W_img ,[8 , 4] )
+queen_W = Queen("queen" , "white" , queen_W_img ,[8 , 4]  ,queen_Ws_img)
     
-king_W = King("king" , "white" , king_W_img ,[8 , 5]) 
+king_W = King("king" , "white" , king_W_img ,[8 , 5] , king_Ws_img) 
     
-bishop_WL = Bishop("bishop" , "white" , bishop_W_img ,[8 , 3] )
-bishop_WR = Bishop("bishop" , "white" , bishop_W_img ,[8 , 6] )
+bishop_WL = Bishop("bishop" , "white" , bishop_W_img ,[8 , 3]  , bishop_Ws_img)
+bishop_WR = Bishop("bishop" , "white" , bishop_W_img ,[8 , 6] , bishop_Ws_img)
     
-knight_WL = Knight("knight" , "white" , knight_W_img ,[8 , 2])
-knight_WR = Knight("knight" , "white" , knight_W_img ,[8 , 7])
+knight_WL = Knight("knight" , "white" , knight_W_img ,[8 , 2], knight_Ws_img)
+knight_WR = Knight("knight" , "white" , knight_W_img ,[8 , 7] , knight_Ws_img)
     
-rook_WL = Rook("rook" , "white" , rook_W_img ,[8 , 1] )
-rook_WR = Rook("rook" , "white" , rook_W_img ,[8 , 8] )
+rook_WL = Rook("rook" , "white" , rook_W_img ,[8 , 1] , rook_Ws_img )
+rook_WR = Rook("rook" , "white" , rook_W_img ,[8 , 8] , rook_Ws_img )
 Board.rookWL =  rook_WL
 Board.rookWR = rook_WR
 
-pawn_W1 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 1])
-pawn_W2 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 2])
-pawn_W3 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 3])
-pawn_W4 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 4])
-pawn_W5 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 5])
-pawn_W6 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 6])
-pawn_W7 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 7])
-pawn_W8 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 8])
+pawn_W1 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 1] , pawn_Ws_img)
+pawn_W2 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 2] , pawn_Ws_img)
+pawn_W3 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 3] , pawn_Ws_img)
+pawn_W4 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 4] , pawn_Ws_img)
+pawn_W5 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 5] , pawn_Ws_img)
+pawn_W6 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 6] , pawn_Ws_img)
+pawn_W7 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 7] , pawn_Ws_img)
+pawn_W8 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 8] , pawn_Ws_img)
 
 
     
@@ -111,28 +129,28 @@ pawn_W8 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 8])
 whitePieces = [queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W1 ,pawn_W2,pawn_W3,pawn_W4,pawn_W5,pawn_W6,pawn_W7,pawn_W8 , rook_WL , rook_WR ]
   
 #black pieces initializeation   
-queen_B = Queen("queen" , "black" , queen_B_img ,[1 , 4] )
+queen_B = Queen("queen" , "black" , queen_B_img ,[1 , 4] , queen_Bs_img )
     
-king_B = King("king" , "black" , king_B_img ,[1 , 5]) 
+king_B = King("king" , "black" , king_B_img ,[1 , 5] , king_Bs_img) 
     
-bishop_BL = Bishop("bishop" , "black" , bishop_B_img ,[1 , 3])
-bishop_BR = Bishop("bishop" , "black" , bishop_B_img ,[1 , 6])
+bishop_BL = Bishop("bishop" , "black" , bishop_B_img ,[1 , 3] , bishop_Bs_img)
+bishop_BR = Bishop("bishop" , "black" , bishop_B_img ,[1 , 6] , bishop_Bs_img)
     
-knight_BL = Knight("knight" , "black" , knight_B_img ,[1 , 2])
-knight_BR = Knight("knight" , "black" , knight_B_img ,[1 , 7])
+knight_BL = Knight("knight" , "black" , knight_B_img ,[1 , 2] , knight_Bs_img)
+knight_BR = Knight("knight" , "black" , knight_B_img ,[1 , 7] , knight_Bs_img)
     
-rook_BL = Rook("rook" , "black" , rook_B_img ,[1 , 1])
-rook_BR = Rook("rook" , "black" , rook_B_img ,[1 , 8])
+rook_BL = Rook("rook" , "black" , rook_B_img ,[1 , 1] ,rook_Bs_img)
+rook_BR = Rook("rook" , "black" , rook_B_img ,[1 , 8] , rook_Bs_img)
 Board.rookBL =  rook_BL
 Board.rookBR = rook_BR
-pawn_B1 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 1])
-pawn_B2 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 2])
-pawn_B3 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 3])
-pawn_B4 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 4])
-pawn_B5 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 5])
-pawn_B6 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 6])
-pawn_B7 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 7])
-pawn_B8 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 8])
+pawn_B1 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 1] , pawn_Bs_img)
+pawn_B2 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 2] , pawn_Bs_img)
+pawn_B3 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 3] , pawn_Bs_img)
+pawn_B4 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 4] , pawn_Bs_img)
+pawn_B5 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 5] , pawn_Bs_img)
+pawn_B6 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 6] , pawn_Bs_img)
+pawn_B7 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 7] , pawn_Bs_img)
+pawn_B8 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 8] , pawn_Bs_img)
 
 blackPieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL , pawn_B1,pawn_B2,pawn_B3,pawn_B4,pawn_B5,pawn_B6,pawn_B7,pawn_B8 , rook_BL , rook_BR ]
   
@@ -152,6 +170,67 @@ fps = 60
 
 Board.pieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL , pawn_B1,pawn_B2,pawn_B3,pawn_B4,pawn_B5,pawn_B6,pawn_B7,pawn_B8 , rook_BL , rook_BR  ,
                 queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W1 ,pawn_W2,pawn_W3,pawn_W4,pawn_W5,pawn_W6,pawn_W7,pawn_W8 , rook_WL , rook_WR  ]
+
+def Reset():
+    queen_W = Queen("queen" , "white" , queen_W_img ,[8 , 4]  ,queen_Ws_img)
+    
+    king_W = King("king" , "white" , king_W_img ,[8 , 5] , king_Ws_img) 
+    
+    bishop_WL = Bishop("bishop" , "white" , bishop_W_img ,[8 , 3]  , bishop_Ws_img)
+    bishop_WR = Bishop("bishop" , "white" , bishop_W_img ,[8 , 6] , bishop_Ws_img)
+    
+    knight_WL = Knight("knight" , "white" , knight_W_img ,[8 , 2], knight_Ws_img)
+    knight_WR = Knight("knight" , "white" , knight_W_img ,[8 , 7] , knight_Ws_img)
+    
+    rook_WL = Rook("rook" , "white" , rook_W_img ,[8 , 1] , rook_Ws_img )
+    rook_WR = Rook("rook" , "white" , rook_W_img ,[8 , 8] , rook_Ws_img )
+    Board.rookWL =  rook_WL
+    Board.rookWR = rook_WR
+
+    pawn_W1 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 1] , pawn_Ws_img)
+    pawn_W2 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 2] , pawn_Ws_img)
+    pawn_W3 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 3] , pawn_Ws_img)
+    pawn_W4 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 4] , pawn_Ws_img)
+    pawn_W5 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 5] , pawn_Ws_img)
+    pawn_W6 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 6] , pawn_Ws_img)
+    pawn_W7 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 7] , pawn_Ws_img)
+    pawn_W8 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 8] , pawn_Ws_img)
+    
+    queen_B = Queen("queen" , "black" , queen_B_img ,[1 , 4] , queen_Bs_img )
+    
+    king_B = King("king" , "black" , king_B_img ,[1 , 5] , king_Bs_img) 
+    
+    bishop_BL = Bishop("bishop" , "black" , bishop_B_img ,[1 , 3] , bishop_Bs_img)
+    bishop_BR = Bishop("bishop" , "black" , bishop_B_img ,[1 , 6] , bishop_Bs_img)
+    
+    knight_BL = Knight("knight" , "black" , knight_B_img ,[1 , 2] , knight_Bs_img)
+    knight_BR = Knight("knight" , "black" , knight_B_img ,[1 , 7] , knight_Bs_img)
+    
+    rook_BL = Rook("rook" , "black" , rook_B_img ,[1 , 1] ,rook_Bs_img)
+    rook_BR = Rook("rook" , "black" , rook_B_img ,[1 , 8] , rook_Bs_img)
+    Board.rookBL =  rook_BL
+    Board.rookBR = rook_BR
+    pawn_B1 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 1] , pawn_Bs_img)
+    pawn_B2 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 2] , pawn_Bs_img)
+    pawn_B3 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 3] , pawn_Bs_img)
+    pawn_B4 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 4] , pawn_Bs_img)
+    pawn_B5 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 5] , pawn_Bs_img)
+    pawn_B6 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 6] , pawn_Bs_img)
+    pawn_B7 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 7] , pawn_Bs_img)
+    pawn_B8 =  Pawn("pawn" , "black" , pawn_B_img ,[2 , 8] , pawn_Bs_img)
+    
+    Board.pieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL , pawn_B1,pawn_B2,pawn_B3,pawn_B4,pawn_B5,pawn_B6,pawn_B7,pawn_B8 , rook_BL , rook_BR  ,
+                queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W1 ,pawn_W2,pawn_W3,pawn_W4,pawn_W5,pawn_W6,pawn_W7,pawn_W8 , rook_WL , rook_WR  ]
+    Board.whiteSideDead = []
+    Board.blackSideDead = []
+    Board.log = []
+    Board.logTxt = ""
+    Board.turn = "white"
+    Board.won = ""
+    
+
+
+    
 def DrawPieces():      
     for piece in Board.pieces :   
             piece.Draw()
@@ -207,7 +286,27 @@ def DrawLog() :
             Board.screen.blit(word_t, (x, y))
             x += word_t.get_width() * 1.
    
+def DrawDead() :
     
+    j = 1
+    for i in range(len(Board.whiteSideDead)) :
+        
+        if i % 4 == 0 :
+            j += 1
+        
+        piece = Board.whiteSideDead[i]
+        position = Board.getPositionOnGivenSquareForDead([j ,i%4] , piece.color)
+        screen.blit(piece.smallSprite ,( position[0] , position[1]) )
+    j = 1
+    for i in range(len(Board.blackSideDead)) :
+        
+        if i % 4 == 0 :
+            j += 1
+        
+        piece = Board.blackSideDead[i]
+        position = Board.getPositionOnGivenSquareForDead([j ,i%4] , piece.color)
+        screen.blit(piece.smallSprite ,( position[0] , position[1]) )
+        
         
 while Board.run : 
     timer.tick(fps)
@@ -215,8 +314,13 @@ while Board.run :
     screen.blit(Board.board ,(0,0))
     DrawPieces()
     DrawLog()
+    DrawDead()
     for event in pygame.event.get():
         if event.type == pygame.QUIT :
+            file = open("log" + str(random.randrange(0 , 1000)) + ".txt", 'w')
+            words = Board.logTxt.replace("," , "\n")
+            file.writelines(words)
+            file.close()
             Board.run = False
             
         if event.type == pygame.KEYDOWN:
@@ -227,8 +331,13 @@ while Board.run :
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_r:
-                print("Key A has been pressed")
+                print("Key R has been pressed")
                 Board.Redo()
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_x:
+                print("Key X has been pressed")
+                Reset()
         if event.type == pygame.MOUSEBUTTONDOWN :
              #print(pygame.mouse.get_pos[0]) 
             # (x,y) = 
@@ -240,8 +349,10 @@ while Board.run :
                 if targetPiece :          
                      gi = copy.deepcopy(targetPiece.MovementSelection())
                      if rowCol in gi :
-                           targetPiece.Move(rowCol)   
                            Board.saveLog(targetPiece , targetPiece.FileRank(rowCol) ) 
+                           targetPiece.Move(rowCol)  
+                             
+                           
                                   
                                           
              elif not piece.selected and Board.turn == piece.color :   
@@ -263,7 +374,7 @@ while Board.run :
     #king_W.Checkmate() 
     #king_B.Checkmate() 
     pygame.display.flip()
-   # print(mouse.get_position() )
+    #print(mouse.get_position() )
        
 pygame.quit()
 

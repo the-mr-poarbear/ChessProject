@@ -8,8 +8,8 @@ from Board import Board
 
 class King(Piece):
     
-    def __init__ (self , tag , color , sprite , rowCol ) :
-        super().__init__( tag , color , sprite , rowCol)
+    def __init__ (self , tag , color , sprite , rowCol ,smallSprite ) :
+        super().__init__( tag , color , sprite , rowCol , smallSprite)
         self.patterns = [[0,1] , [1,0] , [-1,0] , [0,-1] , [1,1] , [-1,-1] , [1,-1] , [-1,1] ]
         # # self.cult = False
         Board.king.append(self)
@@ -145,7 +145,7 @@ class King(Piece):
         print("1")
         if self.castle :
             print("2")
-            if Board.Check() != self.color :
+            if self.color not in  Board.Check() :
                 result = [] 
                 startingPoint = copy.deepcopy( [self.row , self.column])
                 print("5")
@@ -155,7 +155,7 @@ class King(Piece):
                         canCastle = True
                         for i in range(2) :
                              self.Move(self.castleHousesQ[i] , False)
-                             if Board.Check() == self.color :
+                             if self.color in  Board.Check() :
                                 canCastle = False       
                              self.Move(startingPoint , False)
                          
@@ -168,16 +168,19 @@ class King(Piece):
                 if (Board.blackKingsideCastle and self.color == "black") or (Board.whiteKingsideCastle and self.color == "white") : 
                      print("in again")
                      if Board.getPieceOnGivenSquare(self.castleHousesK[0][0] , self.castleHousesK[0][1]) == None and  Board.getPieceOnGivenSquare(self.castleHousesK[1][0] , self.castleHousesK[1][1]) == None  :
+                        print("how")
                         canCastle = True
                         for house in self.castleHousesK :
                              self.Move(house , False)
-                             if Board.Check() == self.color :
+                             if self.color in Board.Check() :
+                                print("are")
                                 canCastle = False       
                              self.Move(startingPoint , False)
                          
                         Board.Check()
                     
                         if canCastle :
+                            print("you")
                             result.append(self.castleHousesK[1])
                             self.canKcastle = True
                         

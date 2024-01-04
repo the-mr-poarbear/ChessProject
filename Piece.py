@@ -13,7 +13,7 @@ screen = Board.screen
 
 class Piece:
     
-    def __init__(self , tag , color , sprite , rowCol ) :
+    def __init__(self , tag , color , sprite , rowCol ,smallSprite ) :
         self.tag = tag
         self.color = color 
         self.sprite = sprite
@@ -22,6 +22,7 @@ class Piece:
         self.isDead = False
         self.selected = False
         self.patterns = []
+        self.smallSprite = smallSprite
        
         
     def Draw(self) :
@@ -133,20 +134,20 @@ class Piece:
         
        
         for validMove in tempValidMoves :
-           
-            
             
             if Board.getPieceOnGivenSquare(validMove[0] , validMove[1]) != None :
                     enemyPiece = Board.getPieceOnGivenSquare(validMove[0] , validMove[1])
                     #print(enemyPiece.tag)
                     enemyPiece.isDead = True
-                    if Board.Check() != self.color :
+                    self.Move(validMove , doMove= False)
+                    if self.color not in  Board.Check() :
                         result.append(validMove) 
+                    self.Move(startingLoc , doMove= False) 
                     enemyPiece.isDead = False
             #print(validMove)   
             else :
                 self.Move(validMove , doMove= False)
-                if Board.Check() != self.color :
+                if self.color not in  Board.Check() :
                     result.append(validMove) 
                 self.Move(startingLoc , doMove= False) 
            

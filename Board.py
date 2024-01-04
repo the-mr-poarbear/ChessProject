@@ -14,7 +14,7 @@ class Board:
     won = ""
     startingPoint = [560,140]
     sideOfTheSquare = 100
-    board = pygame.image.load("ChessProject\Board\APossant.png")
+    board = pygame.image.load("ChessProject\Board\APossant2.png")
     scaleRate = 0.6
     board = pygame.transform.scale(board , (board.get_width()*scaleRate , board.get_height()*scaleRate)) 
     startingPoint[0] =  startingPoint[0]*scaleRate
@@ -31,11 +31,18 @@ class Board:
     log = []
     timer = time.time()
     
+    startingPointDeadW = [90 , 1000]
+    startingPointDeadB = [90 , 0]
     whiteSideDead = []
-    whiteSideDeadPos = []
-    whiteSideDeadGrave = 50
-
+    sideDeadGrave = 80
     blackSideDead = []
+    
+    sideDeadGrave *= scaleRate
+    startingPointDeadW [0] *= scaleRate
+    startingPointDeadW [1] *= scaleRate
+    startingPointDeadB [0] *= scaleRate
+    startingPointDeadB [1] *= scaleRate
+    
     
     whiteKingsideCastle = True
     blackKingsideCastle = True
@@ -57,9 +64,11 @@ class Board:
     def saveLog(piece ,destination , captured = False  ,lastFR = []):
         
         while not Board.redoLog.IsEmpty():
-            Board.redoLog.Pop()   
-        
-        color = Board.Check()
+            Board.redoLog.Pop() 
+        color = None
+        if Board.Check() :
+            color = Board.Check()[0]
+            
         if color != None and color != piece.color :
             check = True 
         else:
@@ -169,7 +178,19 @@ class Board:
         positionY = Board.startingPoint[1] + row * Board.sideOfTheSquare - 16*Board.sideOfTheSquare/16
         return [positionX , positionY]
         
+    def getPositionOnGivenSquareForDead(rowCol , color) :
+        if color == "white" :
 
+            positionX = Board.startingPointDeadW[0] + rowCol[1] * Board.sideDeadGrave 
+            positionY = Board.startingPointDeadW[1] - rowCol[0] * Board.sideDeadGrave 
+            return [positionX , positionY]
+        else :
+      
+            positionX = Board.startingPointDeadB[0] + rowCol[1] * Board.sideDeadGrave 
+            positionY = Board.startingPointDeadB[1] + rowCol[0] * Board.sideDeadGrave 
+            return [positionX , positionY]
+            
+        
     def getRowColOnGivenPosition(positionX , positionY) :
         row = (positionY - Board.startingPoint[1]) //  Board.sideOfTheSquare + 1
         col = (positionX - Board.startingPoint[0]) //  Board.sideOfTheSquare + 1
@@ -208,10 +229,12 @@ class Board:
             if Board.pieces[i] == piece :
                 print("hi")
                 Board.pieces.pop(i)
-                if piece.color =="white" :
-                    Board.whiteSideDead.append(piece)
+                if piece.color == "white" :
+                     Board.whiteSideDead.append(piece)
                 else :
-                     Board.blackSideDead.append(piece)
+                    Board.blackSideDead.append(piece)
+                    
+                
                 break
              
         piece.isDead = True
@@ -266,9 +289,19 @@ class Board:
             node = Board.undo.Pop()
             node.movedPiece.row = node.startingPoint[0]
             node.movedPiece.column = node.startingPoint[1]
-        
+            
             if node.movedPiece.tag == "pawn"  :
                 node.movedPiece.firstMove = node.firstMove
+                node.movedPiece.secondMove = node.secondMove
+                pawn = node.movedPiece 
+                
+                left = Board.getPieceOnGivenSquare(node.movedPiece.row , node.movedPiece.column - 1)
+                right = Board.getPieceOnGivenSquare(node.movedPiece.row , node.movedPiece.column + 1) 
+                if left != None and left.tag == "pawn" and left.color != pawn.color and left.secondMove:
+                    left.enPassant = True
+                if right != None and right.tag == "pawn" and right.color != pawn.color and right.secondMove :
+                    right.enPassant = True
+                
                 
             elif node.movedPiece.tag == "rook" :
                 node.movedPiece.firstMove = node.firstMove
@@ -353,6 +386,11 @@ class Board:
                      
             if node.captured != None :
                 node.captured.isDead = False
+                if node.captured.color == "white" :
+                    Board.whiteSideDead.remove(node.captured)
+                else :
+                    Board.blackSideDead.remove(node.captured)
+                    
                 Board.pieces.append(node.captured)
                 #node.captured.sprite = pygame.transform.scale(node.captured.sprite , (60,60))
             Board.redoLog.Push(Board.log.pop())
@@ -398,6 +436,12 @@ class Board:
             if node.captured != None :
                 node.captured.isDead = True
                 Board.pieces.remove(node.captured)
+                
+                if node.captured.color == "white" :
+                    Board.whiteSideDead.append(node.captured)
+                else :
+                    Board.blackSideDead.append(node.captured)
+                
                 #node.captured.sprite = pygame.transform.scale(node.captured.sprite , (60,60))
                 #remember to add the dead in white or blackside graves
             Board.log.append(Board.redoLog.Pop())
@@ -414,19 +458,22 @@ class Board:
         else :
                 kingB =  Board.king[0]
                 kingW = Board.king[1] 
-                
+        result = [] 
+        kingW.check = False
+        kingB.check = False
         for piece in Board.pieces : 
             if not piece.isDead :
+                
                 if piece.color == "black" :
                     tempMoves = copy.deepcopy(piece.MovementSelection(ignoreCheck = True) )
-          
+                    
                     for tempMove2 in tempMoves :
                         if tempMove2 == [kingW.row , kingW.column] :
                             #print("white check")
                             kingW.check = True
-                            return "white"
-                    kingW.check = False
-                   
+                            result.append("white")
+                    
+                    
                 elif piece.color == "white" : 
                 
                     tempMoves2 = copy.deepcopy(piece.MovementSelection(ignoreCheck = True) )
@@ -434,14 +481,15 @@ class Board:
                         if tempMove == [kingB.row , kingB.column] :
                             #print("black check")
                             kingB.check = True
-                            return "black" 
+                            result.append("black") 
                     
-                    kingB.check = False
                     
+                    
+        return result
 
     def CheckMate() :
         
-        if Board.Check() == "white" and Board.turn == "white" :
+        if "white"  in Board.Check() and Board.turn == "white" :
             
             moves = []
             for piece in Board.pieces :
@@ -453,7 +501,7 @@ class Board:
                 #Board.run = False
                 Board.won = "black"
                 return "white"
-        elif Board.Check() == "black" and Board.turn == "black" :
+        elif "black" in Board.Check() and Board.turn == "black" :
             moves = []
             for piece in Board.pieces :
                 if piece.color == "black" :

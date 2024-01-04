@@ -4,8 +4,8 @@ from Board import Board
 
 class Bishop(Piece):
     
-    def __init__ (self , tag , color , sprite , rowCol ) :
-        super().__init__( tag , color , sprite , rowCol)
+    def __init__ (self , tag , color , sprite , rowCol ,smallSprite ) :
+        super().__init__( tag , color , sprite , rowCol , smallSprite)
         self.patterns = [ [1,1] , [-1,-1] , [1,-1] , [-1,1] ]
         self.shorten = "B"
         

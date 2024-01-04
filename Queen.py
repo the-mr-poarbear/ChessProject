@@ -5,8 +5,8 @@ from Board import Board
 
 class Queen(Piece):
     
-    def __init__ (self , tag , color , sprite , rowCol ) :
-        super().__init__( tag , color , sprite , rowCol)
+    def __init__ (self , tag , color , sprite , rowCol  , smallSprite) :
+        super().__init__( tag , color , sprite , rowCol , smallSprite)
         self.patterns = [[0,1] , [1,0] , [-1,0] , [0,-1] , [1,1] , [-1,-1] , [1,-1] , [-1,1] ]
         self.shorten = "Q"
         

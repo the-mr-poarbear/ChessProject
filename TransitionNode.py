@@ -1,6 +1,6 @@
 class TransitionNode:
     
-    def __init__( self , turn , movedPiece ,startingPoint , destination , firstMove = None , isDead = False , captured = None , castleQ = None , castleK = None) :
+    def __init__( self , turn , movedPiece ,startingPoint , destination , firstMove = None , isDead = False , captured = None , castleQ = None , castleK = None , secondMove = None) :
         self.turn = turn
         self.movedPiece = movedPiece
         self.destination = destination
@@ -10,6 +10,7 @@ class TransitionNode:
         self.captured = captured
         self.castleQ = castleQ
         self.castleK = castleK
+        self.secondMove = secondMove
 
 
 

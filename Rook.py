@@ -3,8 +3,8 @@ import pygame
 from Board import Board
 
 class Rook(Piece):
-    def __init__ (self , tag , color , sprite , rowCol ) :
-        super().__init__( tag , color , sprite , rowCol )
+    def __init__ (self , tag , color , sprite , rowCol , smallSprite) :
+        super().__init__( tag , color , sprite , rowCol , smallSprite )
         self.patterns = [[0,1] , [1,0] , [-1,0] , [0,-1]]
         self.shorten = "R"
         self.firstMove = True
