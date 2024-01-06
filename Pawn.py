@@ -29,29 +29,37 @@ class Pawn(Piece):
                     self.row = rowCol[0]
                     self.column = rowCol[1] 
                     
+                    if self.color == "white" and self.row == 1:
+                        Board.pawnPro = self 
+                    elif self.color == "black" and self.row == 8 :
+                        Board.pawnPro = self
+                    
                     
                     if  self.color == "white"  :
                         piece = Board.getPieceOnGivenSquare(validMove[0] +1 , validMove[1])
                         if piece != None and piece.tag == "pawn" and piece.color != self.color and piece.enPassant :
-                            Board.log.pop() 
+                            
                             Board.saveLog(self , self.FileRank(rowCol) , True , fr)
+                            Board.pop = True
                             Board.Remove(piece) 
-                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = piece , secondMove= self.secondMove )) 
+                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = piece , secondMove= self.secondMove ,  pot =Board.pot , promotion = Board.pawnPro)) 
                             Board.Check()
 
                         else :
-                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = captured ,secondMove= self.secondMove  )) 
+                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = captured ,secondMove= self.secondMove  ,  pot =Board.pot , promotion = Board.pawnPro )) 
                             
                         self.enPassant = False
                         
                     elif  self.color == "black" :
                         piece = Board.getPieceOnGivenSquare(validMove[0] - 1 , validMove[1])
                         if piece != None and piece.tag == "pawn" and piece.color != self.color and piece.enPassant :
+                            Board.pop = True
+                            Board.saveLog(self , self.FileRank(rowCol) , True , fr)
                             Board.Remove(piece)
-                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = piece , secondMove= self.secondMove  )) 
+                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = piece , secondMove= self.secondMove , pot =Board.pot , promotion = Board.pawnPro )) 
                             Board.Check()
                         else :
-                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = captured , secondMove= self.secondMove  )) 
+                            Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove , self.firstMove ,captured = captured , secondMove= self.secondMove  , pot =Board.pot , promotion = Board.pawnPro )) 
                             
                         self.enPassant = False
                         
@@ -81,7 +89,8 @@ class Pawn(Piece):
                         
                     Board.SwitchTurn()
                     self.selected = False
-             
+                    
+                         
                     Board.CheckMate()
                     
          else :

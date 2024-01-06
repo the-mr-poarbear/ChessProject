@@ -64,9 +64,9 @@ class Piece:
                     self.row = rowCol[0]
                     self.column = rowCol[1] 
                     if self.tag == "rook" :
-                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove ,captured = captured ,firstMove= self.firstMove))   
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove ,captured = captured ,firstMove= self.firstMove , pot =Board.pot))   
                     else :
-                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove ,captured = captured))
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove ,captured = captured ,  pot =Board.pot))
                         
                     while not Board.redo.IsEmpty() :
                         Board.redo.Pop()

@@ -34,11 +34,12 @@ class King(Piece):
      
     def Move(self , rowCol , doMove = True ,captured = None) :
         if doMove :
-            print("hi") 
-            self.firstMove = False
+            
             for validMove in self.validMoves :
+                
                  print(validMove , rowCol)
                  if validMove == rowCol :
+                    self.firstMove = False 
                     startingPoint = copy.deepcopy([self.row , self.column])
                     self.row = rowCol[0]
                     self.column = rowCol[1] 
@@ -51,7 +52,7 @@ class King(Piece):
                             
                         else :
                             targetRook = Board.rookBL
-                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleQ = targetRook , firstMove= self.firstMove))   
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleQ = targetRook , firstMove= self.firstMove ,  pot =Board.pot))   
                         targetRook.column += 3
                         
                     elif self.tag == "king" and validMove == self.castleHousesK[1] and self.canKcastle  :
@@ -60,10 +61,10 @@ class King(Piece):
                             targetRook = Board.rookWR
                         else :
                             targetRook = Board.rookBR
-                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleK = targetRook , firstMove= self.castle))
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleK = targetRook , firstMove= self.castle,  pot =Board.pot))
                         targetRook.column -= 2
                     else :
-                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured ,firstMove= self.castle) )
+                        Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured ,firstMove= self.castle ,  pot =Board.pot) )
                         
                     for piece in Board.pieces :
                         if piece.tag == "pawn" :
@@ -137,20 +138,20 @@ class King(Piece):
                             self.validMoves.append(validCastle)
                             
                     self.CheckValidMoves(self.validMoves)
-                        
-                    
+                      
+            print("res", self.validMoves)       
             return self.validMoves 
     
     def CastleCheck(self) :
-        print("1")
+        #print("1")
         if self.castle :
-            print("2")
+           # print("2")
             if self.color not in  Board.Check() :
                 result = [] 
                 startingPoint = copy.deepcopy( [self.row , self.column])
-                print("5")
+                #print("5")
                 if (Board.blackQueensideCastle and self.color == "black") or (Board.whiteQueensideCastle and self.color == "white") :
-                     print("salam")
+                     #print("salam")
                      if Board.getPieceOnGivenSquare(self.castleHousesQ[0][0] , self.castleHousesQ[0][1]) == None and  Board.getPieceOnGivenSquare(self.castleHousesQ[1][0] , self.castleHousesQ[1][1]) == None and Board.getPieceOnGivenSquare(self.castleHousesQ[2][0] , self.castleHousesQ[2][1]) == None :
                         canCastle = True
                         for i in range(2) :

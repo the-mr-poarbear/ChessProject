@@ -5,6 +5,7 @@ import random
 from tabnanny import check
 import time
 from tkinter import W
+from turtle import pos
 import pygame
 
 from Board import Board
@@ -16,7 +17,8 @@ from Queen import Queen
 from Rook import Rook 
 from Piece import Piece 
 import mouse
-
+from TransitionNode import TransitionNode
+from Stack import Stack
     
 #initialize 
 
@@ -172,6 +174,7 @@ Board.pieces = [queen_B , bishop_BL , bishop_BR , king_B , knight_BR , knight_BL
                 queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W1 ,pawn_W2,pawn_W3,pawn_W4,pawn_W5,pawn_W6,pawn_W7,pawn_W8 , rook_WL , rook_WR  ]
 
 def Reset():
+    
     queen_W = Queen("queen" , "white" , queen_W_img ,[8 , 4]  ,queen_Ws_img)
     
     king_W = King("king" , "white" , king_W_img ,[8 , 5] , king_Ws_img) 
@@ -227,7 +230,15 @@ def Reset():
     Board.logTxt = ""
     Board.turn = "white"
     Board.won = ""
-    
+    Board.pot = False
+    Board.i = 0
+    Board.pop = False
+    Board.selectedPiece = None
+    Board.pawnPro = None
+    Board.undo = Stack()
+    Board.redo = Stack()
+    Board.undoLog = Stack()
+    Board.redoLog = Stack()
 
 
     
@@ -261,25 +272,40 @@ def Counter() :
     Board.screen.blit(subText ,(X - .4 * Board.sideOfTheSquare , Y + 2 * Board.sideOfTheSquare ) )
     if now - Board.timer >= 30 :
         Board.SwitchTurn()
-    
+        font2 = pygame.font.Font("freesansbold.ttf" , 80)
+        Board.screen.blit(font2.render((Board.turn + " Won"), True, "white"), Board.startingPoint)
+        pygame.display.flip()
+        time.sleep(3)
+        
+ 
+
 def DrawLog() :
     
     x_start = Board.startingPoint[0] + 10 * Board.sideOfTheSquare
     y_start = Board.startingPoint[1] + 3.5 * Board.sideOfTheSquare
     x_end = Board.startingPoint[0] + 13 * Board.sideOfTheSquare
-    
+    y_end =  Board.startingPoint[1] + 8 * Board.sideOfTheSquare
     
     x = x_start
     y = y_start
     
     
     words = Board.logTxt.split(",")
-
-    for word in words:
-        word_t = smallfont.render(word, True, "white")
+    
+    for k in range(Board.i ,len(words)):
+        
+        word_t = smallfont.render(words[k], True, "white")
         if word_t.get_width() + x <= x_end:
             Board.screen.blit(word_t, (x, y))
             x += word_t.get_width() * 1.1
+        elif y + word_t.get_height() > y_end :
+            t = x_start
+            for k in range(Board.i ,len(words)):
+                word_t = smallfont.render(words[k], True, "white")
+                if word_t.get_width() + t <= x_end:
+                    Board.i+=1
+ 
+                t += word_t.get_width() * 1.1
         else:
             y += word_t.get_height() * 1.1
             x = x_start
@@ -307,7 +333,143 @@ def DrawDead() :
         position = Board.getPositionOnGivenSquareForDead([j ,i%4] , piece.color)
         screen.blit(piece.smallSprite ,( position[0] , position[1]) )
         
+def DrawPromotionMenu() :
+    
+    
+   
+    if Board.pawnPro.color == "white" :
+        position = Board.getPoistionOnGivenSquare(1 , -1 )
+        pygame.draw.rect(Board.screen,(80, 84, 143), pygame.Rect( position[0] ,position[1] ,1 * Board.sideOfTheSquare , 4 * Board.sideOfTheSquare ) )
+    
+        queen = Board.getPoistionOnGivenSquare(1 , -1 )
+        screen.blit(queen_W_img ,( queen[0] , queen[1]) )
+    
+        knight = Board.getPoistionOnGivenSquare(2 , -1 )
+        screen.blit(knight_W_img ,( knight[0] , knight[1]) )
+    
+        rook = Board.getPoistionOnGivenSquare(3 , -1 )
+        screen.blit(rook_W_img ,( rook[0] , rook[1]) )
+    
+        bishop = Board.getPoistionOnGivenSquare(4 , -1 )
+        screen.blit(bishop_W_img ,( bishop[0] , bishop[1]) )
+    else :
+       
+        position = Board.getPoistionOnGivenSquare(5 , -1 )
+        pygame.draw.rect(Board.screen,(104, 80, 143), pygame.Rect( position[0] ,position[1] ,1 * Board.sideOfTheSquare , 4 * Board.sideOfTheSquare ) )
+    
+        queen = Board.getPoistionOnGivenSquare(5 , -1 )
+        screen.blit(queen_B_img ,( queen[0] , queen[1]) )
+    
+        knight = Board.getPoistionOnGivenSquare(6 , -1 )
+        screen.blit(knight_B_img ,( knight[0] , knight[1]) )
+    
+        rook = Board.getPoistionOnGivenSquare(7 , -1 )
+        screen.blit(rook_B_img ,( rook[0] , rook[1]) )
+    
+        bishop = Board.getPoistionOnGivenSquare(8 , -1 )
+        screen.blit(bishop_B_img ,( bishop[0] , bishop[1]) )
+    
+def Promotion() :
+    if Board.pawnPro.color == "white" :
+                     
+        if rowCol == [1 , -1] :
+            queenPro = Queen("queen" , "white" , queen_W_img ,[Board.pawnPro.row , Board.pawnPro.column ]  ,queen_Ws_img)
+            temp = Board.undo.Pop()
+            Board.undo.Push(TransitionNode(temp.turn , temp.movedPiece ,temp.startingPoint, temp.destination , firstMove= temp.firstMove  ,captured= temp.captured ,secondMove= temp.secondMove , pot= temp.pot ,promotion= queenPro )) 
+            Board.pieces.remove(Board.pawnPro)
+            Board.pieces.append(queenPro)
+            posFileRank = Board.FileRank([Board.pawnPro.row , Board.pawnPro.column ])
+            Board.log.append(posFileRank + " = " + "Q") 
+            Board.pawnPro = None
+            Board.undoLog.Push(posFileRank + " = " + "Q") 
+            Board.PrintLog()
+                        
+        elif rowCol == [2 , -1] :
+            knightPro = Knight("knight" , "white" , knight_W_img ,[Board.pawnPro.row , Board.pawnPro.column ]  , knight_Ws_img)
+            temp = Board.undo.Pop()
+            Board.undo.Push(TransitionNode(temp.turn , temp.movedPiece ,temp.startingPoint, temp.destination , firstMove= temp.firstMove  ,captured= temp.captured ,secondMove= temp.secondMove , pot= temp.pot ,promotion= knightPro )) 
+            Board.pieces.remove(Board.pawnPro)
+            Board.pieces.append(knightPro)
+            posFileRank = Board.FileRank([Board.pawnPro.row , Board.pawnPro.column ])
+            Board.log.append(posFileRank + " = " + "N") 
+            Board.pawnPro = None 
+            Board.undoLog.Push(posFileRank + " = " + "N") 
+            Board.PrintLog()
+                        
+        elif rowCol == [3 , -1] :
+            rookPro = Rook("rook" , "white" , rook_W_img ,[Board.pawnPro.row , Board.pawnPro.column ], rook_Ws_img )
+            temp = Board.undo.Pop()
+            Board.undo.Push(TransitionNode(temp.turn , temp.movedPiece ,temp.startingPoint, temp.destination , firstMove= temp.firstMove  ,captured= temp.captured ,secondMove= temp.secondMove , pot= temp.pot ,promotion= rookPro )) 
+            Board.pieces.remove(Board.pawnPro)
+            Board.pieces.append(rookPro)
+            posFileRank = Board.FileRank([Board.pawnPro.row , Board.pawnPro.column ])
+            Board.log.append(posFileRank + " = " + "R") 
+            Board.pawnPro = None
+            Board.undoLog.Push(posFileRank + " = " + "R") 
+            Board.PrintLog()
+                        
+        elif rowCol == [4 , -1] :
+            bishopPro = Bishop("bishop" , "white" , bishop_W_img ,[Board.pawnPro.row , Board.pawnPro.column ] , bishop_Ws_img) 
+            temp = Board.undo.Pop()
+            Board.undo.Push(TransitionNode(temp.turn , temp.movedPiece ,temp.startingPoint, temp.destination , firstMove= temp.firstMove  ,captured= temp.captured ,secondMove= temp.secondMove , pot= temp.pot ,promotion= bishopPro )) 
+            Board.pieces.remove(Board.pawnPro)
+            Board.pieces.append(bishopPro)      
+            posFileRank = Board.FileRank([Board.pawnPro.row , Board.pawnPro.column ])
+            Board.log.append(posFileRank + " = " + "B") 
+            Board.pawnPro = None
+            Board.undoLog.Push(posFileRank + " = " + "B") 
+            Board.PrintLog()
+            
+    else :
         
+        if rowCol == [5 , -1] :
+            queenPro = Queen("queen" , "black" , queen_B_img ,[Board.pawnPro.row , Board.pawnPro.column ]  ,queen_Bs_img)
+            temp = Board.undo.Pop()
+            Board.undo.Push(TransitionNode(temp.turn , temp.movedPiece ,temp.startingPoint, temp.destination , firstMove= temp.firstMove  ,captured= temp.captured ,secondMove= temp.secondMove , pot= temp.pot ,promotion= queenPro )) 
+            Board.pieces.remove(Board.pawnPro)
+            Board.pieces.append(queenPro)
+            posFileRank = Board.FileRank([Board.pawnPro.row , Board.pawnPro.column ])
+            Board.log.append(posFileRank + " = " + "Q") 
+            Board.pawnPro = None
+            Board.undoLog.Push(posFileRank + " = " + "Q") 
+            Board.PrintLog()
+                        
+        elif rowCol == [6 , -1] :
+            knightPro = Knight("knight" , "black" , knight_B_img ,[Board.pawnPro.row , Board.pawnPro.column ]  , knight_Bs_img)
+            temp = Board.undo.Pop()
+            Board.undo.Push(TransitionNode(temp.turn , temp.movedPiece ,temp.startingPoint, temp.destination , firstMove= temp.firstMove  ,captured= temp.captured ,secondMove= temp.secondMove , pot= temp.pot ,promotion= knightPro )) 
+            Board.pieces.remove(Board.pawnPro)
+            Board.pieces.append(knightPro)
+            posFileRank = Board.FileRank([Board.pawnPro.row , Board.pawnPro.column ])
+            Board.log.append(posFileRank + " = " + "N") 
+            Board.pawnPro = None 
+            Board.undoLog.Push(posFileRank + " = " + "N") 
+            Board.PrintLog()
+                        
+        elif rowCol == [7 , -1] :
+            rookPro = Rook("rook" , "black" , rook_B_img ,[Board.pawnPro.row , Board.pawnPro.column ], rook_Bs_img )
+            temp = Board.undo.Pop()
+            Board.undo.Push(TransitionNode(temp.turn , temp.movedPiece ,temp.startingPoint, temp.destination , firstMove= temp.firstMove  ,captured= temp.captured ,secondMove= temp.secondMove , pot= temp.pot ,promotion= rookPro )) 
+            Board.pieces.remove(Board.pawnPro)
+            Board.pieces.append(rookPro)
+            posFileRank = Board.FileRank([Board.pawnPro.row , Board.pawnPro.column ])
+            Board.log.append(posFileRank + " = " + "R") 
+            Board.pawnPro = None
+            Board.undoLog.Push(posFileRank + " = " + "R") 
+            Board.PrintLog()
+                        
+        elif rowCol == [8 , -1] :
+            bishopPro = Bishop("bishop" , "black" , bishop_B_img ,[Board.pawnPro.row , Board.pawnPro.column ] , bishop_Bs_img) 
+            temp = Board.undo.Pop()
+            Board.undo.Push(TransitionNode(temp.turn , temp.movedPiece ,temp.startingPoint, temp.destination , firstMove= temp.firstMove  ,captured= temp.captured ,secondMove= temp.secondMove , pot= temp.pot ,promotion= bishopPro )) 
+            Board.pieces.remove(Board.pawnPro)
+            Board.pieces.append(bishopPro)      
+            posFileRank = Board.FileRank([Board.pawnPro.row , Board.pawnPro.column ])
+            Board.log.append(posFileRank + " = " + "B") 
+            Board.pawnPro = None
+            Board.undoLog.Push(posFileRank + " = " + "B") 
+            Board.PrintLog()
+    
 while Board.run : 
     timer.tick(fps)
     
@@ -315,6 +477,8 @@ while Board.run :
     DrawPieces()
     DrawLog()
     DrawDead()
+    if Board.pawnPro :
+        DrawPromotionMenu()
     for event in pygame.event.get():
         if event.type == pygame.QUIT :
             file = open("log" + str(random.randrange(0 , 1000)) + ".txt", 'w')
@@ -322,17 +486,30 @@ while Board.run :
             file.writelines(words)
             file.close()
             Board.run = False
-            
-        if event.type == pygame.KEYDOWN:
+         
+        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pos() >= (Board.startingPoint[0] + 10 * Board.sideOfTheSquare , Board.startingPoint[1] + 8.6 * Board.sideOfTheSquare) and pygame.mouse.get_pos() <= (Board.startingPoint[0] + 11 * Board.sideOfTheSquare , Board.startingPoint[1] + 9 * Board.sideOfTheSquare) :
+             print("Button Undo has been pressed")
+             Board.Undo()    
+        if event.type == pygame.KEYDOWN  :
 
             if event.key == pygame.K_z:
                 print("Key A has been pressed")
                 Board.Undo()
+              
+                
+        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pos() >= (Board.startingPoint[0] + 11 * Board.sideOfTheSquare , Board.startingPoint[1] + 8.6 * Board.sideOfTheSquare) and pygame.mouse.get_pos() <= (Board.startingPoint[0] + 12 * Board.sideOfTheSquare , Board.startingPoint[1] + 9 * Board.sideOfTheSquare) :
+            print("Button Redo has been pressed")
+            Board.Redo()
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_r:
                 print("Key R has been pressed")
                 Board.Redo()
+         
+                
+        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pos() >= (Board.startingPoint[0] + 12 * Board.sideOfTheSquare , Board.startingPoint[1] + 8.6 * Board.sideOfTheSquare) and pygame.mouse.get_pos() <= (Board.startingPoint[0] + 13 * Board.sideOfTheSquare , Board.startingPoint[1] + 9 * Board.sideOfTheSquare) :
+            print("Button has been pressed")
+            Reset()
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_x:
@@ -344,17 +521,21 @@ while Board.run :
              rowCol = Board.getRowColOnGivenPosition(pygame.mouse.get_pos()[0] , pygame.mouse.get_pos()[1] )
              piece = Board.getPieceOnGivenSquare(rowCol[0] , rowCol[1])
              
-             if piece is None :                
+             if piece is None and not Board.pawnPro :                
                 targetPiece = Board.selectedPiece 
                 if targetPiece :          
                      gi = copy.deepcopy(targetPiece.MovementSelection())
                      if rowCol in gi :
-                           Board.saveLog(targetPiece , targetPiece.FileRank(rowCol) ) 
+                           targetPiece.MovementSelection()
                            targetPiece.Move(rowCol)  
-                             
-                           
-                                  
-                                          
+                           Board.saveLog(targetPiece , targetPiece.FileRank(rowCol) ) 
+                           if Board.pop :
+                               Board.log.pop()
+                               Board.PrintLog()
+                               Board.pop = False
+             elif piece == None and Board.pawnPro :
+                 Promotion()
+           
              elif not piece.selected and Board.turn == piece.color :   
                 Board.selectPiece(piece)
                 
@@ -374,7 +555,7 @@ while Board.run :
     #king_W.Checkmate() 
     #king_B.Checkmate() 
     pygame.display.flip()
-    #print(mouse.get_position() )
+    #print(pygame.mouse.get_pos() )
        
 pygame.quit()
 

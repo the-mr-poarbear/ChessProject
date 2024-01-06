@@ -1,22 +1,19 @@
 import copy
 import time
 import pygame
-
-
-
-
-
 from Stack import Stack
 
 class Board:
-    
+    pot = False
     logTxt = ""
     won = ""
+    i = 0
     startingPoint = [560,140]
     sideOfTheSquare = 100
-    board = pygame.image.load("ChessProject\Board\APossant2.png")
+    board = pygame.image.load("ChessProject\Board\APossant5.png")
+    pop = False
     scaleRate = 0.6
-    board = pygame.transform.scale(board , (board.get_width()*scaleRate , board.get_height()*scaleRate)) 
+    #board = pygame.transform.scale(board , (board.get_width()*scaleRate , board.get_height()*scaleRate)) 
     startingPoint[0] =  startingPoint[0]*scaleRate
     startingPoint[1] =  startingPoint[1]*scaleRate
     sideOfTheSquare = sideOfTheSquare*scaleRate
@@ -26,7 +23,7 @@ class Board:
     selectedPiece = None
     king = []
     turn = "white"
-    
+    pawnPro = None
     # num , piece , captured sign ,destination , checkOrCheckmate 
     log = []
     timer = time.time()
@@ -65,26 +62,35 @@ class Board:
         
         while not Board.redoLog.IsEmpty():
             Board.redoLog.Pop() 
-        color = None
-        if Board.Check() :
-            color = Board.Check()[0]
             
+        Board.Check()
+        color = None
+        for king in Board.king :
+            if Board.Check() :
+                color = king.color
+        
         if color != None and color != piece.color :
             check = True 
         else:
             check = False 
-            
-        checkmateCol = Board.CheckMate()
+        print("check" , check) 
+        print("color" , color)
         
-        print(checkmateCol)
-        if checkmateCol != None and checkmateCol != piece.color :
-           checkmate = True    
-        else :
-           checkmate = False 
-        print(checkmate)
+        if not Board.pot :   
+            checkmateCol = Board.CheckMate()
+            if checkmateCol != None and checkmateCol != piece.color :
+               checkmate = True    
+            else :
+               checkmate = False 
+            print(checkmate)
+            
+        print("pottt" , Board.pot)
         if piece.tag != "pawn" :
             
-            if piece.tag == "king" and destination == Board.FileRank(piece.castleHousesQ[1]) and piece.canQcastle :
+            if Board.pot :
+                 Board.log.append("1/2 - 1/2")  
+                 
+            elif piece.tag == "king" and destination == Board.FileRank(piece.castleHousesQ[1]) and piece.canQcastle :
                  
                  Board.log.append("O-O-O")
                  piece.canQcastle = False
@@ -156,10 +162,10 @@ class Board:
         Board.logTxt = ""
         num = 0
         for i in range (len(Board.log)) :
-            if i%2 == 0 :
-                num +=1   
-                print(" " + str(num) + ".")
-                Board.logTxt += (" " + str(num) + ". ")
+            
+            num +=1   
+            print(" " + str(num) + ".")
+            Board.logTxt += (" " + str(num) + ". ")
                 
             print(Board.log[i])   
             Board.logTxt += ( Board.log[i] + ",")
@@ -289,7 +295,7 @@ class Board:
             node = Board.undo.Pop()
             node.movedPiece.row = node.startingPoint[0]
             node.movedPiece.column = node.startingPoint[1]
-            
+            Board.pot = node.pot
             if node.movedPiece.tag == "pawn"  :
                 node.movedPiece.firstMove = node.firstMove
                 node.movedPiece.secondMove = node.secondMove
@@ -301,6 +307,11 @@ class Board:
                     left.enPassant = True
                 if right != None and right.tag == "pawn" and right.color != pawn.color and right.secondMove :
                     right.enPassant = True
+                    
+                if node.promotion :
+                    Board.pieces.remove(node.promotion)
+                    Board.pieces.append(node.movedPiece)
+                    
                 
                 
             elif node.movedPiece.tag == "rook" :
@@ -393,7 +404,12 @@ class Board:
                     
                 Board.pieces.append(node.captured)
                 #node.captured.sprite = pygame.transform.scale(node.captured.sprite , (60,60))
-            Board.redoLog.Push(Board.log.pop())
+            
+
+                
+            tempLog = Board.undoLog.Pop()
+            Board.redoLog.Push(tempLog)
+            Board.log.append("Undo " +tempLog)
             print("hubji")
             print(Board.undoLog.IsEmpty())
             Board.redo.Push(node)
@@ -418,6 +434,11 @@ class Board:
                         node.movedPiece.enPassant = True
                     if right != None and right.tag == "pawn" and right.color != node.movedPiece.color :
                         node.movedPiece.enPassant = True
+                    print("node pro" , node.promotion) 
+            if node.promotion :
+                Board.pieces.remove(node.movedPiece) 
+                Board.pieces.append(node.promotion)
+                        
                         
             elif node.movedPiece.tag == "king" :
                  
@@ -444,7 +465,13 @@ class Board:
                 
                 #node.captured.sprite = pygame.transform.scale(node.captured.sprite , (60,60))
                 #remember to add the dead in white or blackside graves
-            Board.log.append(Board.redoLog.Pop())
+            
+           # Board.log.append(Board.redoLog.Pop())
+            
+            tempLog = Board.redoLog.Pop()
+            Board.undoLog.Push(tempLog)
+            Board.log.append("Redo " + tempLog)
+            
             Board.undo.Push(node)
             Board.Check()
             Board.SwitchTurn()
@@ -472,6 +499,7 @@ class Board:
                             #print("white check")
                             kingW.check = True
                             result.append("white")
+                            
                     
                     
                 elif piece.color == "white" : 
@@ -488,7 +516,7 @@ class Board:
         return result
 
     def CheckMate() :
-        
+  
         if "white"  in Board.Check() and Board.turn == "white" :
             
             moves = []
@@ -499,8 +527,17 @@ class Board:
             if moves == [] :
                 print("Black Won")
                 #Board.run = False
+                
+               
+                
+                font = pygame.font.Font("freesansbold.ttf" , 80)
+                Board.screen.blit(font.render(("Black won"), True, "black"), Board.startingPoint)
+                
                 Board.won = "black"
+                pygame.display.flip()
+                time.sleep(3)
                 return "white"
+            
         elif "black" in Board.Check() and Board.turn == "black" :
             moves = []
             for piece in Board.pieces :
@@ -508,8 +545,55 @@ class Board:
                    moves += piece.MovementSelection()
             if moves == []:
                 print("White Won")
+                
+                font = pygame.font.Font("freesansbold.ttf" , 80)
+                Board.screen.blit(font.render(("White Won"), True, "white"), Board.startingPoint)
+                
                 Board.won = "white"
                 #Board.run = False
+                pygame.display.flip()
+                time.sleep(3)
                 return "black"
+        
+
+        elif Board.turn == "black" :
+            movesB = []
+            for piece in Board.pieces :
+                if piece.color == "black" :
+                    movesB += piece.MovementSelection()
+                    print("gi")
+                    print(movesB)
+                    print("khar")
+                    if movesB != [] :
+                        Board.check = False
+                        return
+                   
+            Board.pot = True
+            font = pygame.font.Font("freesansbold.ttf" , 80)
+            Board.screen.blit(font.render(("Stalemate"), True, "white"), Board.startingPoint)
+            Board.saveLog(Board.king[0] , [5 ,4])
+            print("Pot" , Board.pot)
+            pygame.display.flip()
+            time.sleep(3)       
+           
+        else :
+               movesW = []   
+               for piece in Board.pieces :
+                    if piece.color == "white" :
+                        movesW += piece.MovementSelection()
+                        if movesW != [] :
+                            return
+                        
+               font = pygame.font.Font("freesansbold.ttf" , 80)
+               Board.screen.blit(font.render(("Stalemate"), True, "white"), Board.startingPoint)    
+               Board.pot = True
+               Board.saveLog(Board.king[0] , [5 ,4])
+               print("Pot" , Board.pot)
+               pygame.display.flip()
+               time.sleep(3)
+               
+        print("-1")
+            
+            
             
     
