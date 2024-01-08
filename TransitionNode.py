@@ -1,6 +1,9 @@
+from Board import Board
+
+
 class TransitionNode:
     
-    def __init__( self , turn , movedPiece ,startingPoint , destination , firstMove = None , isDead = False , captured = None , castleQ = None , castleK = None , secondMove = None , pot = False , promotion = None ) :
+    def __init__( self , turn , movedPiece ,startingPoint , destination , firstMove = None , isDead = False , captured = None , castleQ = None , castleK = None , secondMove = None , pot = False , promotion = None , won = Board.won) :
         self.turn = turn
         self.movedPiece = movedPiece
         self.destination = destination
@@ -13,4 +16,6 @@ class TransitionNode:
         self.secondMove = secondMove
         self.pot = pot
         self.promotion = promotion
+        self.won = won
+
 

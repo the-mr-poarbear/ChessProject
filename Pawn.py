@@ -80,10 +80,13 @@ class Pawn(Piece):
                                  if right != None and right.tag == "pawn" and right.color != self.color :
                                      self.enPassant = True
                                  
+                             #self.firstMove = False
+                             #self.secondMove = True
                              self.firstMove = False
-                             self.secondMove = True
-                    if self.secondMove :
-                        secondMove = False 
+                             
+                    if not self.firstMove :
+                        secondMove = True 
+                        
                     while not Board.redo.IsEmpty() :
                         Board.redo.Pop() 
                         
@@ -152,10 +155,10 @@ class Pawn(Piece):
                    
               left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
               right = Board.getPieceOnGivenSquare(self.row , self.column + 1)  
-              if left != None and left.tag == "pawn" and left.enPassant :
+              if left != None and left.tag == "pawn" and left.enPassant and not left.secondMove :
                         
                     self.validMoves.append([self.row -1 , self.column -1])
-              if right != None and right.tag == "pawn" and right.enPassant :
+              if right != None and right.tag == "pawn" and right.enPassant and not right.secondMove :
                         
                     self.validMoves.append([self.row -1 , self.column +1]) 
                         

@@ -41,8 +41,11 @@ class Piece:
     def ShowValidMoves(self) :
         if self.color == "white" :
              for i , validMove in enumerate(self.validMoves) :
-            
-                pygame.draw.circle(Board.screen , RGB(255-5 * i , 111 , 180 - 5 * i) , Board.getPoistionOnGivenSquare(validMove[0] +.5 , validMove[1] + .5) ,10 ) 
+                enemy = Board.getPieceOnGivenSquare(validMove[0] , validMove[1])
+                if enemy and enemy.color != Board.turn :
+                    pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(validMove[0] +.5 , validMove[1] + .5) ,10 )    
+                else :
+                    pygame.draw.circle(Board.screen , RGB(255-5 * i , 111 , 180 - 5 * i) , Board.getPoistionOnGivenSquare(validMove[0] +.5 , validMove[1] + .5) ,10 ) 
         else :
             for i , validMove in enumerate(self.validMoves) :
             

@@ -8,8 +8,8 @@ class Board:
     logTxt = ""
     won = ""
     i = 0
-    startingPoint = [560,140]
-    sideOfTheSquare = 100
+    startingPoint = [554,138]
+    sideOfTheSquare = 101.87
     board = pygame.image.load("ChessProject\Board\APossant5.png")
     pop = False
     scaleRate = 0.6
@@ -59,16 +59,20 @@ class Board:
         pass
     
     def saveLog(piece ,destination , captured = False  ,lastFR = []):
-        
+       
         while not Board.redoLog.IsEmpty():
             Board.redoLog.Pop() 
             
-        Board.Check()
+        print(Board.Check() , "check4")
         color = None
-        for king in Board.king :
-            if Board.Check() :
-                color = king.color
+        temp = Board.Check()
+        if temp :
+            color = Board.Check()[0]
         
+            
+        print("color" , color)
+        
+        print(color , "color")
         if color != None and color != piece.color :
             check = True 
         else:
@@ -111,17 +115,17 @@ class Board:
                  Board.log.append(piece.shorten + "x" + destination + "+" )
                  
             elif not captured and checkmate :
-                 Board.log.append(piece.shorten + destination + "#" )
                  if Board.won == "white" :
-                    Board.log.append("1-0") 
+                    Board.log.append(piece.shorten + destination + "# 1-0") 
                  else :
-                    Board.log.append("0-1") 
+                    Board.log.append(piece.shorten + destination + "# 0-1") 
+                    
             elif captured and checkmate :
-                 Board.log.append(piece.shorten + "x" + destination + "#" )
                  if Board.won == "white" :
-                    Board.log.append("1-0") 
+                    Board.log.append(piece.shorten + "x" + destination + "# 1-0") 
                  else :
-                    Board.log.append("0-1") 
+                    Board.log.append(piece.shorten +"x"+ destination + "# 0-1") 
+                    
         else :
             if not captured and not check and not checkmate :
                     #print("1")    
@@ -160,15 +164,35 @@ class Board:
             
     def PrintLog() :
         Board.logTxt = ""
-        num = 0
+        num = 1
+        j = -1
         for i in range (len(Board.log)) :
-            
-            num +=1   
-            print(" " + str(num) + ".")
-            Board.logTxt += (" " + str(num) + ". ")
                 
-            print(Board.log[i])   
-            Board.logTxt += ( Board.log[i] + ",")
+            if not (Board.log[i] and (Board.log[i][0] == "U" or ( Board.log[i][0] == "R" and len(Board.log[i]) >= 4 and Board.log[i][3] == "o"))) :
+                
+                j+=1
+                
+                
+                num += 1/2
+                if j%2 == 0 :
+                    print( str(int(num)) + ".")
+                    Board.logTxt += (" " + str(int(num)) + ". ")
+                    Board.logTxt += ( Board.log[i] )
+                else :                
+                    Board.logTxt += (" " +  Board.log[i] + ",")
+                    
+                   
+                    
+            else :
+                if Board.log[i] and Board.log[i][0] == "U" :
+                    j-=1
+                    num-= 1/2
+                else :
+                    j+=1
+                    num+=1/2
+                    
+                Board.logTxt += (", " +  Board.log[i] + ",")
+                
     
     def getPieceOnGivenSquare( row , column) :     
 
@@ -181,7 +205,7 @@ class Board:
     
     def getPoistionOnGivenSquare(row , column ) :
         positionX = Board.startingPoint[0] + column * Board.sideOfTheSquare - Board.sideOfTheSquare
-        positionY = Board.startingPoint[1] + row * Board.sideOfTheSquare - 16*Board.sideOfTheSquare/16
+        positionY = Board.startingPoint[1] + row * Board.sideOfTheSquare - Board.sideOfTheSquare
         return [positionX , positionY]
         
     def getPositionOnGivenSquareForDead(rowCol , color) :
@@ -296,6 +320,7 @@ class Board:
             node.movedPiece.row = node.startingPoint[0]
             node.movedPiece.column = node.startingPoint[1]
             Board.pot = node.pot
+            Board.won = None
             if node.movedPiece.tag == "pawn"  :
                 node.movedPiece.firstMove = node.firstMove
                 node.movedPiece.secondMove = node.secondMove
@@ -420,11 +445,13 @@ class Board:
 
     def Redo() :
         if not Board.redo.IsEmpty() :
-            
+           
             node = Board.redo.Pop()
             node.movedPiece.row = node.destination[0]
             node.movedPiece.column = node.destination[1]
-        
+            Board.won = node.won
+            Board.pot = node.pot
+
             if node.movedPiece.tag == "pawn" :
                 node.movedPiece.firstMove = False
                 if node.movedPiece.secondMove and node.movedPiece.row == 5 or node.movedPiece.row == 4 :
@@ -526,55 +553,50 @@ class Board:
             
             if moves == [] :
                 print("Black Won")
-                #Board.run = False
-                
-               
-                
-                font = pygame.font.Font("freesansbold.ttf" , 80)
-                Board.screen.blit(font.render(("Black won"), True, "black"), Board.startingPoint)
-                
+                               
                 Board.won = "black"
-                pygame.display.flip()
-                time.sleep(3)
+                node = Board.undo.Pop()
+                node.won = "black"
+                Board.undo.Push(node)
+                
                 return "white"
+            else :
+                Board.won = None
             
         elif "black" in Board.Check() and Board.turn == "black" :
             moves = []
             for piece in Board.pieces :
                 if piece.color == "black" :
                    moves += piece.MovementSelection()
+                   
             if moves == []:
-                print("White Won")
-                
-                font = pygame.font.Font("freesansbold.ttf" , 80)
-                Board.screen.blit(font.render(("White Won"), True, "white"), Board.startingPoint)
+                print("White Won") 
                 
                 Board.won = "white"
-                #Board.run = False
-                pygame.display.flip()
-                time.sleep(3)
+                node = Board.undo.Pop()
+                node.won = "white"
+                Board.undo.Push(node)
+
+
+
                 return "black"
-        
+            else :
+                Board.won = None
 
         elif Board.turn == "black" :
             movesB = []
             for piece in Board.pieces :
                 if piece.color == "black" :
                     movesB += piece.MovementSelection()
-                    print("gi")
-                    print(movesB)
-                    print("khar")
+                   
                     if movesB != [] :
-                        Board.check = False
+                        #Board.check = False
+                        Board.pot = False
                         return
                    
-            Board.pot = True
-            font = pygame.font.Font("freesansbold.ttf" , 80)
-            Board.screen.blit(font.render(("Stalemate"), True, "white"), Board.startingPoint)
+            Board.pot = True          
             Board.saveLog(Board.king[0] , [5 ,4])
-            print("Pot" , Board.pot)
-            pygame.display.flip()
-            time.sleep(3)       
+            print("Pot" , Board.pot)     
            
         else :
                movesW = []   
@@ -582,16 +604,14 @@ class Board:
                     if piece.color == "white" :
                         movesW += piece.MovementSelection()
                         if movesW != [] :
+                            Board.pot = False
                             return
                         
-               font = pygame.font.Font("freesansbold.ttf" , 80)
-               Board.screen.blit(font.render(("Stalemate"), True, "white"), Board.startingPoint)    
+ 
                Board.pot = True
                Board.saveLog(Board.king[0] , [5 ,4])
                print("Pot" , Board.pot)
-               pygame.display.flip()
-               time.sleep(3)
-               
+                     
         print("-1")
             
             

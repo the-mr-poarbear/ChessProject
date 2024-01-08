@@ -139,7 +139,7 @@ class King(Piece):
                             
                     self.CheckValidMoves(self.validMoves)
                       
-            print("res", self.validMoves)       
+           # print("res", self.validMoves)       
             return self.validMoves 
     
     def CastleCheck(self) :
@@ -167,21 +167,21 @@ class King(Piece):
                             self.canQcastle = True
                         
                 if (Board.blackKingsideCastle and self.color == "black") or (Board.whiteKingsideCastle and self.color == "white") : 
-                     print("in again")
+                    
                      if Board.getPieceOnGivenSquare(self.castleHousesK[0][0] , self.castleHousesK[0][1]) == None and  Board.getPieceOnGivenSquare(self.castleHousesK[1][0] , self.castleHousesK[1][1]) == None  :
-                        print("how")
+                      
                         canCastle = True
                         for house in self.castleHousesK :
                              self.Move(house , False)
                              if self.color in Board.Check() :
-                                print("are")
+                               
                                 canCastle = False       
                              self.Move(startingPoint , False)
                          
                         Board.Check()
                     
                         if canCastle :
-                            print("you")
+                           
                             result.append(self.castleHousesK[1])
                             self.canKcastle = True
                         

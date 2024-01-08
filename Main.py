@@ -239,20 +239,28 @@ def Reset():
     Board.redo = Stack()
     Board.undoLog = Stack()
     Board.redoLog = Stack()
-
+    Board.timer = time.time()
 
     
 def DrawPieces():      
     for piece in Board.pieces :   
             piece.Draw()
             
-    #for pieceW in Board.whiteSideDead :
-    #    pieceW.DrawDeadW()
+
+def DrawWinner():
+    
+    if Board.won == "white" :
+        font = pygame.font.Font("freesansbold.ttf" , 65)
+        Board.screen.blit(font.render(("White won"), True, "white"),[ Board.startingPoint[0] + 5/4 * Board.sideOfTheSquare , Board.startingPoint[1] - 5/4 * Board.sideOfTheSquare])
         
-    #for pieceB in Board.blackSideDead :
-    #    pieceB.DrawDeadB()
-       
-#run loop 
+    elif Board.won == "black" :
+        font = pygame.font.Font("freesansbold.ttf" , 65)
+        Board.screen.blit(font.render(("Black won"), True, "white"), [ Board.startingPoint[0] + 5/4 * Board.sideOfTheSquare , Board.startingPoint[1] - 5/4 * Board.sideOfTheSquare])
+    elif Board.pot :
+        font = pygame.font.Font("freesansbold.ttf" , 65)
+        Board.screen.blit(font.render(("Stalemate"), True, "white"), [ Board.startingPoint[0] + 5/4 * Board.sideOfTheSquare , Board.startingPoint[1] - 5/4 * Board.sideOfTheSquare])
+        
+
 def Counter() :
     now = time.time()
     
@@ -272,11 +280,13 @@ def Counter() :
     Board.screen.blit(subText ,(X - .4 * Board.sideOfTheSquare , Y + 2 * Board.sideOfTheSquare ) )
     if now - Board.timer >= 30 :
         Board.SwitchTurn()
-        font2 = pygame.font.Font("freesansbold.ttf" , 80)
-        Board.screen.blit(font2.render((Board.turn + " Won"), True, "white"), Board.startingPoint)
-        pygame.display.flip()
-        time.sleep(3)
         
+        if Board.turn == "white" :
+            Board.won = "white"
+        else :
+            Board.won = "black"
+            
+        Board.SwitchTurn()
  
 
 def DrawLog() :
@@ -284,7 +294,7 @@ def DrawLog() :
     x_start = Board.startingPoint[0] + 10 * Board.sideOfTheSquare
     y_start = Board.startingPoint[1] + 3.5 * Board.sideOfTheSquare
     x_end = Board.startingPoint[0] + 13 * Board.sideOfTheSquare
-    y_end =  Board.startingPoint[1] + 8 * Board.sideOfTheSquare
+    y_end =  Board.startingPoint[1] + 8.7 * Board.sideOfTheSquare
     
     x = x_start
     y = y_start
@@ -292,25 +302,20 @@ def DrawLog() :
     
     words = Board.logTxt.split(",")
     
+    while "" in words :
+        words.remove("")
+    
     for k in range(Board.i ,len(words)):
         
-        word_t = smallfont.render(words[k], True, "white")
-        if word_t.get_width() + x <= x_end:
-            Board.screen.blit(word_t, (x, y))
-            x += word_t.get_width() * 1.1
-        elif y + word_t.get_height() > y_end :
-            t = x_start
-            for k in range(Board.i ,len(words)):
-                word_t = smallfont.render(words[k], True, "white")
-                if word_t.get_width() + t <= x_end:
-                    Board.i+=1
- 
-                t += word_t.get_width() * 1.1
-        else:
-            y += word_t.get_height() * 1.1
-            x = x_start
-            Board.screen.blit(word_t, (x, y))
-            x += word_t.get_width() * 1.
+        word_t = smallfont.render(words[k], True, "white")        
+        Board.screen.blit(word_t, (x, y))  
+        
+        y += word_t.get_height() * 1.1
+        if y + word_t.get_height() > y_end :  
+            print("aouhrgiu;begroun;ergo;nerg;onesgr;jnergs;kbj")
+            Board.i+=1
+   
+       
    
 def DrawDead() :
     
@@ -469,14 +474,30 @@ def Promotion() :
             Board.pawnPro = None
             Board.undoLog.Push(posFileRank + " = " + "B") 
             Board.PrintLog()
+            
+def DrawMouse():
+    rowcol = Board.getRowColOnGivenPosition(pygame.mouse.get_pos()[0] , pygame.mouse.get_pos()[1])
+    if rowcol[0] > 0 and rowcol[1] > 0 and rowcol[0] <= 8 and rowcol[1] <= 8 :
+        
+        position = Board.getPoistionOnGivenSquare(rowcol[0] , rowcol[1])
+    
+        if Board.turn == "white" :
+            pygame.draw.rect(Board.screen , (101, 64, 130), pygame.Rect(position[0] , position[1] , Board.sideOfTheSquare , Board.sideOfTheSquare))
+        else :
+            pygame.draw.rect(Board.screen , (93, 137, 179), pygame.Rect(position[0] , position[1] , Board.sideOfTheSquare , Board.sideOfTheSquare))
+        
+   
+    
     
 while Board.run : 
     timer.tick(fps)
     
     screen.blit(Board.board ,(0,0))
+    DrawMouse()
     DrawPieces()
     DrawLog()
     DrawDead()
+    DrawWinner()
     if Board.pawnPro :
         DrawPromotionMenu()
     for event in pygame.event.get():
@@ -486,8 +507,11 @@ while Board.run :
             file.writelines(words)
             file.close()
             Board.run = False
-         
-        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pos() >= (Board.startingPoint[0] + 10 * Board.sideOfTheSquare , Board.startingPoint[1] + 8.6 * Board.sideOfTheSquare) and pygame.mouse.get_pos() <= (Board.startingPoint[0] + 11 * Board.sideOfTheSquare , Board.startingPoint[1] + 9 * Board.sideOfTheSquare) :
+            
+        undoButPosStart = [Board.startingPoint[0] + 9.8 * Board.sideOfTheSquare , Board.startingPoint[0] + 4.6 * Board.sideOfTheSquare ]  
+        undoButPosEnd =  [Board.startingPoint[0] + 10.8 * Board.sideOfTheSquare , Board.startingPoint[0] + 5 * Board.sideOfTheSquare ]  
+        #print(undoButPosStart[0] + 7/6 * Board.sideOfTheSquare ,undoButPosEnd[0] + 7/6 * Board.sideOfTheSquare)
+        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pos()[0] >= undoButPosStart[0] and pygame.mouse.get_pos()[1] >= undoButPosStart[1] and pygame.mouse.get_pos()[0] <= undoButPosEnd[0]  and pygame.mouse.get_pos()[1] <= undoButPosEnd[1] :
              print("Button Undo has been pressed")
              Board.Undo()    
         if event.type == pygame.KEYDOWN  :
@@ -497,7 +521,7 @@ while Board.run :
                 Board.Undo()
               
                 
-        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pos() >= (Board.startingPoint[0] + 11 * Board.sideOfTheSquare , Board.startingPoint[1] + 8.6 * Board.sideOfTheSquare) and pygame.mouse.get_pos() <= (Board.startingPoint[0] + 12 * Board.sideOfTheSquare , Board.startingPoint[1] + 9 * Board.sideOfTheSquare) :
+        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pos()[0] >= undoButPosStart[0] + 7/6 * Board.sideOfTheSquare and pygame.mouse.get_pos()[1] >= undoButPosStart[1] and pygame.mouse.get_pos()[0] <= undoButPosEnd[0] + 7/6 * Board.sideOfTheSquare and pygame.mouse.get_pos()[1] <= undoButPosEnd[1] :
             print("Button Redo has been pressed")
             Board.Redo()
         if event.type == pygame.KEYDOWN:
@@ -507,7 +531,7 @@ while Board.run :
                 Board.Redo()
          
                 
-        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pos() >= (Board.startingPoint[0] + 12 * Board.sideOfTheSquare , Board.startingPoint[1] + 8.6 * Board.sideOfTheSquare) and pygame.mouse.get_pos() <= (Board.startingPoint[0] + 13 * Board.sideOfTheSquare , Board.startingPoint[1] + 9 * Board.sideOfTheSquare) :
+        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pos()[0] >= undoButPosStart[0] + 14/6 * Board.sideOfTheSquare and pygame.mouse.get_pos()[1] >= undoButPosStart[1] and pygame.mouse.get_pos()[0] <= undoButPosEnd[0] + 14/6 * Board.sideOfTheSquare and pygame.mouse.get_pos()[1] <= undoButPosEnd[1] :
             print("Button has been pressed")
             Reset()
         if event.type == pygame.KEYDOWN:
@@ -528,9 +552,12 @@ while Board.run :
                      if rowCol in gi :
                            targetPiece.MovementSelection()
                            targetPiece.Move(rowCol)  
+                           print(Board.Check() , "check1")
                            Board.saveLog(targetPiece , targetPiece.FileRank(rowCol) ) 
+                           print(Board.Check() , "check2")
                            if Board.pop :
                                Board.log.pop()
+                               Board.undoLog.Pop()
                                Board.PrintLog()
                                Board.pop = False
              elif piece == None and Board.pawnPro :
@@ -541,8 +568,7 @@ while Board.run :
                 
              elif not piece.selected and Board.turn != piece.color : 
                   targetPiece = Board.selectedPiece                      
-                  if targetPiece :
-                      
+                  if targetPiece :   
                       targetPiece.KillOpponent(piece)   
                       
              else : 
@@ -550,7 +576,9 @@ while Board.run :
                 Board.selectedPiece = None
     #king_B.check = king_B.Check() 
     #king_W.check = king_W.Check() 
-    Counter()
+       
+    if Board.won == None or Board.won == "" and not Board.pot  :
+        Counter()
     
     #king_W.Checkmate() 
     #king_B.Checkmate() 
