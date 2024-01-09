@@ -36,8 +36,13 @@ class Pawn(Piece):
                     
                     
                     if  self.color == "white"  :
+                        
                         piece = Board.getPieceOnGivenSquare(validMove[0] +1 , validMove[1])
-                        if piece != None and piece.tag == "pawn" and piece.color != self.color and piece.enPassant :
+                        
+                        node = Board.undo.Pop()
+                        Board.undo.Push(node)
+                        
+                        if piece != None and piece.tag == "pawn" and piece.color != self.color and  node and node.movedPiece == piece and piece.secondMove and piece.row == 4 :
                             
                             Board.saveLog(self , self.FileRank(rowCol) , True , fr)
                             Board.pop = True
@@ -52,7 +57,11 @@ class Pawn(Piece):
                         
                     elif  self.color == "black" :
                         piece = Board.getPieceOnGivenSquare(validMove[0] - 1 , validMove[1])
-                        if piece != None and piece.tag == "pawn" and piece.color != self.color and piece.enPassant :
+                        
+                        node = Board.undo.Pop()
+                        Board.undo.Push(node)
+                        
+                        if piece != None and piece.tag == "pawn" and piece.color != self.color and node and node.movedPiece == piece and piece.secondMove and piece.row == 5 :
                             Board.pop = True
                             Board.saveLog(self , self.FileRank(rowCol) , True , fr)
                             Board.Remove(piece)
@@ -69,6 +78,8 @@ class Pawn(Piece):
                         if piece.tag == "pawn" and piece.color != self.color :
                             piece.canBeEnPa = False
                             
+                    
+                        
                     if  self.firstMove :
                              #print("1") 
                              if self.row == 4 or self.row == 5 :
@@ -83,9 +94,12 @@ class Pawn(Piece):
                              #self.firstMove = False
                              #self.secondMove = True
                              self.firstMove = False
-                             
+                          
+                    if  self.secondMove :
+                       self.secondMove = False   
+                      
                     if not self.firstMove :
-                        secondMove = True 
+                        self.secondMove = True 
                         
                     while not Board.redo.IsEmpty() :
                         Board.redo.Pop() 
@@ -154,11 +168,15 @@ class Pawn(Piece):
               
                    
               left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
-              right = Board.getPieceOnGivenSquare(self.row , self.column + 1)  
-              if left != None and left.tag == "pawn" and left.enPassant and not left.secondMove :
+              right = Board.getPieceOnGivenSquare(self.row , self.column + 1) 
+              
+              node = Board.undo.Pop()
+              Board.undo.Push(node)
+              
+              if left != None and left.tag == "pawn" and node and node.movedPiece == left and left.secondMove and left.row == 4 :
                         
                     self.validMoves.append([self.row -1 , self.column -1])
-              if right != None and right.tag == "pawn" and right.enPassant and not right.secondMove :
+              if right != None and right.tag == "pawn" and node and node.movedPiece == right and right.secondMove and right.row == 4  :
                         
                     self.validMoves.append([self.row -1 , self.column +1]) 
                         
@@ -178,22 +196,30 @@ class Pawn(Piece):
             
              
                     
-              left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
-              right = Board.getPieceOnGivenSquare(self.row , self.column + 1)  
-              if left != None and left.tag == "pawn" and left.enPassant :
+             left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
+             right = Board.getPieceOnGivenSquare(self.row , self.column + 1)  
+             
+             node = Board.undo.Pop()
+             Board.undo.Push(node)
+             
+             if left != None and left.tag == "pawn" and node and node.movedPiece == left and left.secondMove and left.row == 5 :
+                        
                     self.validMoves.append([self.row +1 , self.column -1])
-              if right != None and right.tag == "pawn" and right.enPassant :
-                    self.validMoves.append([self.row +1 , self.column +1])
+                    
+             if right != None and right.tag == "pawn" and node and node.movedPiece == right and right.secondMove and right.row == 5  :
+                        
+                    self.validMoves.append([self.row +1 , self.column +1]) 
+                        
                         
                    
                      
-              if Board.getPieceOnGivenSquare(self.row+1 , self.column-1) is not None :
+             if Board.getPieceOnGivenSquare(self.row+1 , self.column-1) is not None :
                          
                     if Board.getPieceOnGivenSquare(self.row+1 , self.column-1).color == "white" :                    
                         self.validMoves.append([self.row+1,self.column-1])
                         
-              if Board.getPieceOnGivenSquare(self.row+1 , self.column+1) is not None :
-                         
+             if Board.getPieceOnGivenSquare(self.row+1 , self.column+1) is not None :
+                        
                     if Board.getPieceOnGivenSquare(self.row+1 , self.column+1).color == "white" :                     
                         self.validMoves.append([self.row+1,self.column+1])
         

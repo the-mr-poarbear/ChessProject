@@ -283,9 +283,10 @@ def Counter() :
         
         if Board.turn == "white" :
             Board.won = "white"
+            Board.log.append("1-0")
         else :
             Board.won = "black"
-            
+            Board.log.append("0-1")
         Board.SwitchTurn()
  
 

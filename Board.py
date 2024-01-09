@@ -328,9 +328,9 @@ class Board:
                 
                 left = Board.getPieceOnGivenSquare(node.movedPiece.row , node.movedPiece.column - 1)
                 right = Board.getPieceOnGivenSquare(node.movedPiece.row , node.movedPiece.column + 1) 
-                if left != None and left.tag == "pawn" and left.color != pawn.color and left.secondMove:
+                if left != None and left.tag == "pawn" and left.color != pawn.color and left.secondMove and (left.row == 5 or left.row == 4):
                     left.enPassant = True
-                if right != None and right.tag == "pawn" and right.color != pawn.color and right.secondMove :
+                if right != None and right.tag == "pawn" and right.color != pawn.color and right.secondMove  and (right.row == 5 or right.row == 4) :
                     right.enPassant = True
                     
                 if node.promotion :
