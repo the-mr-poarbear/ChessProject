@@ -130,7 +130,8 @@ pawn_W8 =  Pawn("pawn" , "white" , pawn_W_img ,[7 , 8] , pawn_Ws_img)
 
 whitePieces = [queen_W , bishop_WL , bishop_WR , king_W , knight_WR , knight_WL , pawn_W1 ,pawn_W2,pawn_W3,pawn_W4,pawn_W5,pawn_W6,pawn_W7,pawn_W8 , rook_WL , rook_WR ]
   
-#black pieces initializeation   
+#black pieces initializeation 
+#  
 queen_B = Queen("queen" , "black" , queen_B_img ,[1 , 4] , queen_Bs_img )
     
 king_B = King("king" , "black" , king_B_img ,[1 , 5] , king_Bs_img) 
@@ -580,6 +581,9 @@ while Board.run :
        
     if Board.won == None or Board.won == "" and not Board.pot  :
         Counter()
+        
+    
+    Board.Check()
     
     #king_W.Checkmate() 
     #king_B.Checkmate() 

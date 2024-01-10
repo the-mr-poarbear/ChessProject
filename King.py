@@ -123,8 +123,7 @@ class King(Piece):
                     elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
                         self.validMoves.append([tempRow,tempCol])
                             
-                    elif Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color :
-                            
+                    elif Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color :     
                         self.validMoves.append([tempRow,tempCol])  
                     else :
                         pass

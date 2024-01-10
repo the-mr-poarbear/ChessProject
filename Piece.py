@@ -98,8 +98,7 @@ class Piece:
                             
                     
                     Board.SwitchTurn()
-                    self.selected = False
-             
+                    self.selected = False   
                     Board.CheckMate()
     
         else :
@@ -120,29 +119,32 @@ class Piece:
         for validMove in self.validMoves :
                 if validMove == [opPiece.row , opPiece.column] :
                   
-
+                    Board.Remove(opPiece) 
                     fr = copy.deepcopy(self.FileRank([self.row , self.column]))
                     #print(fr)
                     self.Move([opPiece.row , opPiece.column] , captured = opPiece ) 
                     Board.saveLog (self  , self.FileRank(validMove) , captured=  True  , lastFR = fr )
                     
                     self.selected = False 
-                    Board.Remove(opPiece) 
+                    
                     Board.Check()
                     #Board.SwitchTurn()
 
     def CheckValidMoves(self , tempValidMoves) :
+        #tempValidMoves.append([1,4])
+        print(tempValidMoves , "val"  , self.tag)
         startingLoc =copy.deepcopy([self.row  , self.column])
         result = []
-        
-       
+
         for validMove in tempValidMoves :
             
             if Board.getPieceOnGivenSquare(validMove[0] , validMove[1]) != None :
                     enemyPiece = Board.getPieceOnGivenSquare(validMove[0] , validMove[1])
-                    #print(enemyPiece.tag)
+                    print("CHWCK" , Board.Check())
                     enemyPiece.isDead = True
+                   # Board.Remove(enemyPiece)
                     self.Move(validMove , doMove= False)
+                    print("CHWCK2" , Board.Check() , self.tag , self.color)
                     if self.color not in  Board.Check() :
                         result.append(validMove) 
                     self.Move(startingLoc , doMove= False) 
@@ -152,10 +154,10 @@ class Piece:
                 self.Move(validMove , doMove= False)
                 if self.color not in  Board.Check() :
                     result.append(validMove) 
-                self.Move(startingLoc , doMove= False) 
-           
+                self.Move(startingLoc , doMove= False)         
             
             Board.Check()
+        
         self.validMoves = copy.deepcopy(result)
         
 

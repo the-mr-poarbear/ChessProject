@@ -19,7 +19,7 @@ class Bishop(Piece):
                  while not (tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8) :    
                      tempRow += pattern[0]  
                      tempCol += pattern[1]
-                 
+                     
                      if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
                          break
                      elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  

@@ -530,7 +530,7 @@ class Board:
                     
                     
                 elif piece.color == "white" : 
-                
+                    
                     tempMoves2 = copy.deepcopy(piece.MovementSelection(ignoreCheck = True) )
                     for tempMove in tempMoves2 :
                         if tempMove == [kingB.row , kingB.column] :
@@ -543,6 +543,13 @@ class Board:
         return result
 
     def CheckMate() :
+        
+        if Board.king[0].color == "white" :
+                kingW =  Board.king[0]
+                kingB = Board.king[1]
+        else :
+                kingB =  Board.king[0]
+                kingW = Board.king[1] 
   
         if "white"  in Board.Check() and Board.turn == "white" :
             
@@ -567,8 +574,10 @@ class Board:
             moves = []
             for piece in Board.pieces :
                 if piece.color == "black" :
+                   print(piece.tag)
                    moves += piece.MovementSelection()
                    
+            print("Kmoves" , kingB.MovementSelection())      
             if moves == []:
                 print("White Won") 
                 

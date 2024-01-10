@@ -35,7 +35,8 @@ class Queen(Piece):
                         self.validMoves.append([tempRow,tempCol])
                      else :
                          break
-         if not ignoreCheck :       
+                     
+         if not ignoreCheck :    
                  self.CheckValidMoves(self.validMoves)           
          return self.validMoves  
 
