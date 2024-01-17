@@ -244,7 +244,7 @@ def Reset():
 
     
 def DrawPieces():      
-    for piece in Board.pieces :   
+    for piece in Board.pieces : 
             piece.Draw()
             
 
@@ -571,11 +571,15 @@ while Board.run :
                                Board.PrintLog()
                                Board.pop = False
              elif piece == None and Board.pawnPro :
+                 targetPiece = Board.selectedPiece 
+                 targetPiece.MovementSelection()
                  Promotion()
            
-             elif not piece.selected and Board.turn == piece.color :  
+             elif not piece.selected and Board.turn == piece.color : 
+                print("beep")
+                Board.selectPiece(piece)                
                 piece.MovementSelection()
-                Board.selectPiece(piece)
+                print("piiece" , piece.validMoves)
                 
              elif not piece.selected and Board.turn != piece.color :  
                   targetPiece = Board.selectedPiece   
@@ -590,11 +594,11 @@ while Board.run :
     #king_B.check = king_B.Check() 
     #king_W.check = king_W.Check() 
        
-    if Board.won == None or Board.won == "" and not Board.pot :
+    if( Board.won == None or Board.won == "" ) and not Board.pot :
         Counter()
         
     
-    #Board.Check()
+    Board.Check()
     
     #king_W.Checkmate() 
     #king_B.Checkmate() 

@@ -118,23 +118,28 @@ class Pawn(Piece):
      
         
      def MovementSelection(self , ignoreCheck = False) :
-          self.validMoves = [] 
+          if not ignoreCheck : 
+                self.validMoves = [] 
+          tempResult = []
           
           for pattern in self.patterns:
                 
                  if self.firstMove : 
                     self.canBeEnPa = True
-                    self.PawnHandling(ignoreCheck)
+                    
+                    temp = self.PawnHandling(ignoreCheck)
+                    print("pawnhandl" , temp)
+                    tempResult += temp
                     if self.color == "white" :   
                         if Board.getPieceOnGivenSquare(self.row - 1 , self.column) is None :
-                            self.validMoves.append([self.row - 1 , self.column])
+                            tempResult.append([self.row - 1 , self.column])
                             if Board.getPieceOnGivenSquare(self.row - 2 , self.column) is None :
-                                self.validMoves.append([self.row - 2 , self.column])
+                                tempResult.append([self.row - 2 , self.column])
                     else : 
                         if Board.getPieceOnGivenSquare(self.row + 1 , self.column) is None :
-                            self.validMoves.append([self.row + 1 , self.column])
+                            tempResult.append([self.row + 1 , self.column])
                             if Board.getPieceOnGivenSquare(self.row + 2 , self.column) is None :
-                                self.validMoves.append([self.row + 2 , self.column]) 
+                                tempResult.append([self.row + 2 , self.column]) 
                          
                         
                  else :
@@ -144,29 +149,29 @@ class Pawn(Piece):
                      tempRow += pattern[0]  
                      tempCol += pattern[1]  
                  
-                     self.PawnHandling(ignoreCheck)
+                     tempResult += self.PawnHandling(ignoreCheck)
       
                      if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
                         pass 
                      
                      elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
-                         self.validMoves.append([tempRow,tempCol])
+                         tempResult.append([tempRow,tempCol])
                      else :
                          pass
                      
                  if not ignoreCheck :       
-                           self.CheckValidMoves(self.validMoves) 
-                           
-                 
-                 return self.validMoves  
+                           self.CheckValidMoves(tempResult) 
+                           return self.validMoves
+                 else :
+                    return tempResult  
                  
 
      def PawnHandling(self , ignoreCheck) :
-         
+        result = []
         
         if self.color == "white" :
               
-                   
+              print("1")    
               left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
               right = Board.getPieceOnGivenSquare(self.row , self.column + 1) 
               
@@ -175,23 +180,23 @@ class Pawn(Piece):
               
               if left != None and left.tag == "pawn" and node and node.movedPiece == left and left.secondMove and left.row == 4 :
                         
-                    self.validMoves.append([self.row -1 , self.column -1])
+                    result.append([self.row -1 , self.column -1])
               if right != None and right.tag == "pawn" and node and node.movedPiece == right and right.secondMove and right.row == 4  :
                         
-                    self.validMoves.append([self.row -1 , self.column +1]) 
+                    result.append([self.row -1 , self.column +1]) 
                         
                     
                     
               if Board.getPieceOnGivenSquare(self.row-1 , self.column-1) is not None :
                          
                     if Board.getPieceOnGivenSquare(self.row-1 , self.column-1).color == "black" :       
-                        self.validMoves.append([self.row-1,self.column-1])
-                            
+                        result.append([self.row-1,self.column-1])
+                        print("2", result)     
               if Board.getPieceOnGivenSquare(self.row-1 , self.column+1) is not None :
                          
                     if Board.getPieceOnGivenSquare(self.row-1 , self.column+1).color == "black" :               
-                        self.validMoves.append([self.row-1,self.column+1])
-                            
+                        result.append([self.row-1,self.column+1])
+                        print("3")     
         elif  self.color == "black" :
             
              
@@ -204,11 +209,11 @@ class Pawn(Piece):
              
              if left != None and left.tag == "pawn" and node and node.movedPiece == left and left.secondMove and left.row == 5 :
                         
-                    self.validMoves.append([self.row +1 , self.column -1])
+                    result.append([self.row +1 , self.column -1])
                     
              if right != None and right.tag == "pawn" and node and node.movedPiece == right and right.secondMove and right.row == 5  :
                         
-                    self.validMoves.append([self.row +1 , self.column +1]) 
+                    result.append([self.row +1 , self.column +1]) 
                         
                         
                    
@@ -216,10 +221,11 @@ class Pawn(Piece):
              if Board.getPieceOnGivenSquare(self.row+1 , self.column-1) is not None :
                          
                     if Board.getPieceOnGivenSquare(self.row+1 , self.column-1).color == "white" :                    
-                        self.validMoves.append([self.row+1,self.column-1])
+                        result.append([self.row+1,self.column-1])
                         
              if Board.getPieceOnGivenSquare(self.row+1 , self.column+1) is not None :
                         
                     if Board.getPieceOnGivenSquare(self.row+1 , self.column+1).color == "white" :                     
-                        self.validMoves.append([self.row+1,self.column+1])
-        
+                        result.append([self.row+1,self.column+1])
+                        
+        return result

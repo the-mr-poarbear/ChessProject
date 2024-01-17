@@ -28,7 +28,8 @@ class Piece:
     def Draw(self) :
         if not self.isDead :
             if self.selected :
-                self.CheckValidMoves(self.validMoves)
+                #self.CheckValidMoves(self.validMoves)
+               
                 self.ShowValidMoves()
             position = Board.getPoistionOnGivenSquare(self.row , self.column)
             screen.blit(self.sprite ,( position[0] , position[1]) )
@@ -137,7 +138,7 @@ class Piece:
 
     def CheckValidMoves(self , tempValidMoves) :
         #tempValidMoves.append([1,4])
-        print(tempValidMoves , "val"  , self.tag)
+      
         startingLoc =copy.deepcopy([self.row  , self.column])
         result = []
 
@@ -145,11 +146,11 @@ class Piece:
             
             if Board.getPieceOnGivenSquare(validMove[0] , validMove[1]) != None :
                     enemyPiece = Board.getPieceOnGivenSquare(validMove[0] , validMove[1])
-                    print("CHWCK" , Board.Check())
+                    
                     enemyPiece.isDead = True
                    # Board.Remove(enemyPiece)
                     self.Move(validMove , doMove= False)
-                    print("CHWCK2" , Board.Check() , self.tag , self.color)
+                    
                     if self.color not in  Board.Check() :
                         result.append(validMove) 
                     self.Move(startingLoc , doMove= False) 
@@ -162,7 +163,7 @@ class Piece:
                 self.Move(startingLoc , doMove= False)         
             
             Board.Check()
-        
+        print(self.tag , result)
         self.validMoves = copy.deepcopy(result)
         
 

@@ -10,7 +10,9 @@ class Rook(Piece):
         self.firstMove = True
         
     def MovementSelection(self , ignoreCheck = False) :
-         self.validMoves = [] 
+         if not ignoreCheck : 
+            self.validMoves = [] 
+         tempResult = []
          
          for pattern in self.patterns:
                  tempRow = self.row
@@ -24,19 +26,21 @@ class Rook(Piece):
                          break
                      elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
                          
-                         self.validMoves.append([tempRow,tempCol])
+                         tempResult.append([tempRow,tempCol])
                      elif Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color and Board.getPieceOnGivenSquare(tempRow , tempCol).tag !="king":
 
-                         self.validMoves.append([tempRow,tempCol])
+                         tempResult.append([tempRow,tempCol])
                          break
                      elif  Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color and  Board.getPieceOnGivenSquare(tempRow , tempCol).tag =="king" :
                         
-                        self.validMoves.append([tempRow,tempCol])
+                        tempResult.append([tempRow,tempCol])
                      else :
                          break
          if not ignoreCheck :       
-                 self.CheckValidMoves(self.validMoves)           
-         return self.validMoves   
+                 self.CheckValidMoves(tempResult)  
+                 return self.validMoves
+         else :
+             return tempResult   
 
 
 

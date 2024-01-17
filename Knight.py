@@ -13,7 +13,10 @@ class Knight(Piece):
         
 
      def MovementSelection(self , ignoreCheck = False) :
-            self.validMoves = [] 
+            if not ignoreCheck : 
+                self.validMoves = [] 
+            tempResult = []
+     
             for pattern in self.patterns:
                     tempRow = self.row
                     tempCol =  self.column
@@ -23,16 +26,17 @@ class Knight(Piece):
                     if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
                         pass 
                     elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
-                        self.validMoves.append([tempRow,tempCol])
+                        tempResult.append([tempRow,tempCol])
                             
                     elif Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color :
                             
-                        self.validMoves.append([tempRow,tempCol])  
+                        tempResult.append([tempRow,tempCol])  
                     else :
                         pass
                     
             if not ignoreCheck :       
-                    self.CheckValidMoves(self.validMoves) 
-         
-            return self.validMoves       
+                self.CheckValidMoves(tempResult) 
+                return self.validMoves
+            else :
+                return tempResult       
     

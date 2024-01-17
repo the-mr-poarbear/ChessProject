@@ -104,14 +104,17 @@ class King(Piece):
                 position = Board.getPoistionOnGivenSquare(self.row , self.column)      
                 pygame.draw.rect(Board.screen , "red", pygame.Rect(position[0] , position[1] , Board.sideOfTheSquare , Board.sideOfTheSquare))
             if self.selected :
-                self.MovementSelection()
+                #self.MovementSelection()
                 self.ShowValidMoves()
             position = Board.getPoistionOnGivenSquare(self.row , self.column)
             Board.screen.blit(self.sprite ,( position[0] , position[1]) )
 
     def MovementSelection(self  , ignoreCheck = False) :
             
-            self.validMoves = [] 
+            if not ignoreCheck : 
+                self.validMoves = [] 
+            tempResult = []
+            
             for pattern in self.patterns:
                     tempRow = self.row
                     tempCol =  self.column
@@ -121,10 +124,10 @@ class King(Piece):
                     if tempRow <= 0 or tempCol <=0 or tempRow > 8 or tempCol >8 :
                         pass 
                     elif Board.getPieceOnGivenSquare(tempRow , tempCol) is None :  
-                        self.validMoves.append([tempRow,tempCol])
+                        tempResult.append([tempRow,tempCol])
                             
                     elif Board.getPieceOnGivenSquare(tempRow , tempCol).color != self.color :     
-                        self.validMoves.append([tempRow,tempCol])  
+                        tempResult.append([tempRow,tempCol])  
                     else :
                         pass
                     
@@ -134,12 +137,12 @@ class King(Piece):
                     
                     if castleValMove != None :
                         for validCastle in castleValMove :
-                            self.validMoves.append(validCastle)
+                            tempResult.append(validCastle)
                             
-                    self.CheckValidMoves(self.validMoves)
-                      
-           # print("res", self.validMoves)       
-            return self.validMoves 
+                    self.CheckValidMoves(tempResult)  
+                    return self.validMoves
+            else :       
+                return tempResult 
     
     def CastleCheck(self) :
         #print("1")

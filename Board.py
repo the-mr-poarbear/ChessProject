@@ -517,6 +517,7 @@ class Board:
         else :
                 kingB =  Board.king[0]
                 kingW = Board.king[1] 
+                
         result = [] 
         kingW.check = False
         kingB.check = False
@@ -524,7 +525,7 @@ class Board:
             if not piece.isDead :
                 
                 if piece.color == "black" :
-                    tempMoves = copy.deepcopy(piece.MovementSelection(ignoreCheck = True) )
+                    tempMoves = piece.MovementSelection(ignoreCheck = True)
                     
                     for tempMove2 in tempMoves :
                         if tempMove2 == [kingW.row , kingW.column] :
@@ -536,7 +537,8 @@ class Board:
                     
                 elif piece.color == "white" : 
                     
-                    tempMoves2 = copy.deepcopy(piece.MovementSelection(ignoreCheck = True) )
+                    tempMoves2 = piece.MovementSelection(ignoreCheck = True) 
+                    
                     for tempMove in tempMoves2 :
                         if tempMove == [kingB.row , kingB.column] :
                             #print("black check")
