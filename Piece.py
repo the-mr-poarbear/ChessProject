@@ -148,13 +148,14 @@ class Piece:
                     enemyPiece = Board.getPieceOnGivenSquare(validMove[0] , validMove[1])
                     
                     enemyPiece.isDead = True
-                   # Board.Remove(enemyPiece)
+                    Board.pieces.remove(enemyPiece)
                     self.Move(validMove , doMove= False)
                     
                     if self.color not in  Board.Check() :
                         result.append(validMove) 
                     self.Move(startingLoc , doMove= False) 
                     enemyPiece.isDead = False
+                    Board.pieces.append(enemyPiece)
             #print(validMove)   
             else :
                 self.Move(validMove , doMove= False)

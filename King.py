@@ -104,7 +104,7 @@ class King(Piece):
                 position = Board.getPoistionOnGivenSquare(self.row , self.column)      
                 pygame.draw.rect(Board.screen , "red", pygame.Rect(position[0] , position[1] , Board.sideOfTheSquare , Board.sideOfTheSquare))
             if self.selected :
-                #self.MovementSelection()
+                self.MovementSelection()
                 self.ShowValidMoves()
             position = Board.getPoistionOnGivenSquare(self.row , self.column)
             Board.screen.blit(self.sprite ,( position[0] , position[1]) )

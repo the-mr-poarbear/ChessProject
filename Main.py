@@ -572,7 +572,7 @@ while Board.run :
                                Board.pop = False
              elif piece == None and Board.pawnPro :
                  targetPiece = Board.selectedPiece 
-                 targetPiece.MovementSelection()
+                 
                  Promotion()
            
              elif not piece.selected and Board.turn == piece.color : 

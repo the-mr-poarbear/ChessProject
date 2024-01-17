@@ -128,7 +128,7 @@ class Pawn(Piece):
                     self.canBeEnPa = True
                     
                     temp = self.PawnHandling(ignoreCheck)
-                    print("pawnhandl" , temp)
+                    
                     tempResult += temp
                     if self.color == "white" :   
                         if Board.getPieceOnGivenSquare(self.row - 1 , self.column) is None :
@@ -171,7 +171,7 @@ class Pawn(Piece):
         
         if self.color == "white" :
               
-              print("1")    
+                
               left = Board.getPieceOnGivenSquare(self.row , self.column - 1)
               right = Board.getPieceOnGivenSquare(self.row , self.column + 1) 
               
@@ -191,12 +191,12 @@ class Pawn(Piece):
                          
                     if Board.getPieceOnGivenSquare(self.row-1 , self.column-1).color == "black" :       
                         result.append([self.row-1,self.column-1])
-                        print("2", result)     
+                          
               if Board.getPieceOnGivenSquare(self.row-1 , self.column+1) is not None :
                          
                     if Board.getPieceOnGivenSquare(self.row-1 , self.column+1).color == "black" :               
                         result.append([self.row-1,self.column+1])
-                        print("3")     
+                           
         elif  self.color == "black" :
             
              
