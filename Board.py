@@ -321,11 +321,15 @@ class Board:
             node.movedPiece.column = node.startingPoint[1]
             Board.pot = node.pot
             Board.won = None
+            Board.pawnPro = None
             if node.movedPiece.tag == "pawn"  :
+                
+            
                 node.movedPiece.firstMove = node.firstMove
                 node.movedPiece.secondMove = node.secondMove
                 pawn = node.movedPiece 
-                
+     
+                        
                 left = Board.getPieceOnGivenSquare(node.movedPiece.row , node.movedPiece.column - 1)
                 right = Board.getPieceOnGivenSquare(node.movedPiece.row , node.movedPiece.column + 1) 
                 if left != None and left.tag == "pawn" and left.color != pawn.color and left.secondMove and (left.row == 5 or left.row == 4):
@@ -450,6 +454,7 @@ class Board:
             node.movedPiece.row = node.destination[0]
             node.movedPiece.column = node.destination[1]
             Board.won = node.won
+            Board.pawnPro = node.promotion
             Board.pot = node.pot
 
             if node.movedPiece.tag == "pawn" :

@@ -285,9 +285,11 @@ def Counter() :
         if Board.turn == "white" :
             Board.won = "white"
             Board.log.append("1-0")
+            Board.PrintLog()
         else :
             Board.won = "black"
             Board.log.append("0-1")
+            Board.PrintLog()
         Board.SwitchTurn()
  
 
@@ -502,6 +504,7 @@ while Board.run :
     DrawWinner()
     if Board.pawnPro :
         DrawPromotionMenu()
+        
     for event in pygame.event.get():
         if event.type == pygame.QUIT :
             file = open("log" + str(random.randrange(0 , 1000)) + ".txt", 'w')
@@ -510,9 +513,11 @@ while Board.run :
             file.close()
             Board.run = False
             
+            
         undoButPosStart = [Board.startingPoint[0] + 9.8 * Board.sideOfTheSquare , Board.startingPoint[0] + 4.6 * Board.sideOfTheSquare ]  
         undoButPosEnd =  [Board.startingPoint[0] + 10.8 * Board.sideOfTheSquare , Board.startingPoint[0] + 5 * Board.sideOfTheSquare ]  
         #print(undoButPosStart[0] + 7/6 * Board.sideOfTheSquare ,undoButPosEnd[0] + 7/6 * Board.sideOfTheSquare)
+        
         if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pos()[0] >= undoButPosStart[0] and pygame.mouse.get_pos()[1] >= undoButPosStart[1] and pygame.mouse.get_pos()[0] <= undoButPosEnd[0]  and pygame.mouse.get_pos()[1] <= undoButPosEnd[1] :
              print("Button Undo has been pressed")
              Board.Undo()    
@@ -541,7 +546,8 @@ while Board.run :
             if event.key == pygame.K_x:
                 print("Key X has been pressed")
                 Reset()
-        if event.type == pygame.MOUSEBUTTONDOWN :
+                
+        if event.type == pygame.MOUSEBUTTONDOWN and not Board.won :
              #print(pygame.mouse.get_pos[0]) 
             # (x,y) = 
              rowCol = Board.getRowColOnGivenPosition(pygame.mouse.get_pos()[0] , pygame.mouse.get_pos()[1] )
@@ -549,7 +555,9 @@ while Board.run :
              
              if piece is None and not Board.pawnPro :                
                 targetPiece = Board.selectedPiece 
-                if targetPiece :          
+                
+                if targetPiece :   
+                     targetPiece.MovementSelection()
                      gi = copy.deepcopy(targetPiece.MovementSelection())
                      if rowCol in gi :
                            targetPiece.MovementSelection()
@@ -565,12 +573,15 @@ while Board.run :
              elif piece == None and Board.pawnPro :
                  Promotion()
            
-             elif not piece.selected and Board.turn == piece.color :   
+             elif not piece.selected and Board.turn == piece.color :  
+                piece.MovementSelection()
                 Board.selectPiece(piece)
                 
-             elif not piece.selected and Board.turn != piece.color : 
-                  targetPiece = Board.selectedPiece                      
-                  if targetPiece :   
+             elif not piece.selected and Board.turn != piece.color :  
+                  targetPiece = Board.selectedPiece   
+                   
+                  if targetPiece : 
+                      targetPiece.MovementSelection()
                       targetPiece.KillOpponent(piece)   
                       
              else : 
@@ -579,11 +590,11 @@ while Board.run :
     #king_B.check = king_B.Check() 
     #king_W.check = king_W.Check() 
        
-    if Board.won == None or Board.won == "" and not Board.pot  :
+    if Board.won == None or Board.won == "" and not Board.pot :
         Counter()
         
     
-    Board.Check()
+    #Board.Check()
     
     #king_W.Checkmate() 
     #king_B.Checkmate() 

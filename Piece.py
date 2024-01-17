@@ -28,7 +28,7 @@ class Piece:
     def Draw(self) :
         if not self.isDead :
             if self.selected :
-                self.MovementSelection()
+                self.CheckValidMoves(self.validMoves)
                 self.ShowValidMoves()
             position = Board.getPoistionOnGivenSquare(self.row , self.column)
             screen.blit(self.sprite ,( position[0] , position[1]) )
@@ -40,16 +40,21 @@ class Piece:
             
     def ShowValidMoves(self) :
         if self.color == "white" :
+             
              for i , validMove in enumerate(self.validMoves) :
                 enemy = Board.getPieceOnGivenSquare(validMove[0] , validMove[1])
                 if enemy and enemy.color != Board.turn :
                     pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(validMove[0] +.5 , validMove[1] + .5) ,10 )    
                 else :
-                    pygame.draw.circle(Board.screen , RGB(255-5 * i , 111 , 180 - 5 * i) , Board.getPoistionOnGivenSquare(validMove[0] +.5 , validMove[1] + .5) ,10 ) 
+                    pygame.draw.circle(Board.screen , RGB(255-7 * i , 111 , 180 - 7 * i) , Board.getPoistionOnGivenSquare(validMove[0] +.5 , validMove[1] + .5) ,10 ) 
         else :
             for i , validMove in enumerate(self.validMoves) :
-            
-                pygame.draw.circle(Board.screen , RGB(255-5 * i , 80 , 60 + 5 * i) , Board.getPoistionOnGivenSquare(validMove[0] +.5 , validMove[1] + .5) ,10 ) 
+                
+                enemy = Board.getPieceOnGivenSquare(validMove[0] , validMove[1])
+                if enemy and enemy.color != Board.turn :
+                    pygame.draw.circle(Board.screen , "red" , Board.getPoistionOnGivenSquare(validMove[0] +.5 , validMove[1] + .5) ,10 ) 
+                else :
+                    pygame.draw.circle(Board.screen , RGB(255-7 * i , 80 , 60 + 7 * i) , Board.getPoistionOnGivenSquare(validMove[0] +.5 , validMove[1] + .5) ,10 ) 
         
    
        
