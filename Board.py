@@ -314,9 +314,10 @@ class Board:
                 return file + str(rank)
     
     def Undo() :
-        if not Board.undo.IsEmpty() :
+        if not Board.undo.IsEmpty() and Board.undo.stackArray != [''] :
 
             node = Board.undo.Pop()
+            print("node" , node)
             node.movedPiece.row = node.startingPoint[0]
             node.movedPiece.column = node.startingPoint[1]
             Board.pot = node.pot

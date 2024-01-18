@@ -15,7 +15,9 @@ class Stack :
            return ""
    
     def IsEmpty(self) :
-        if len(self.stackArray) == 0 :
+        
+        if len(self.stackArray) == 0  :
+
             return True
         else :
             return False 
