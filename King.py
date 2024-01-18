@@ -11,7 +11,7 @@ class King(Piece):
     def __init__ (self , tag , color , sprite , rowCol ,smallSprite ) :
         super().__init__( tag , color , sprite , rowCol , smallSprite)
         self.patterns = [[0,1] , [1,0] , [-1,0] , [0,-1] , [1,1] , [-1,-1] , [1,-1] , [-1,1] ]
-        # # self.cult = False
+       
         Board.king.append(self)
         self.check = False
         self.checkmate = False
@@ -36,8 +36,7 @@ class King(Piece):
         if doMove :
             
             for validMove in self.validMoves :
-                
-                 print(validMove , rowCol)
+
                  if validMove == rowCol :
                     self.firstMove = False 
                     startingPoint = copy.deepcopy([self.row , self.column])
@@ -46,12 +45,13 @@ class King(Piece):
                     
                     
                     if self.tag == "king" and validMove == self.castleHousesQ[1] and self.canQcastle :
-                        #print("goox")
+                        
                         if self.color == "white" :
                             targetRook = Board.rookWL
                             
                         else :
                             targetRook = Board.rookBL
+                            
                         Board.undo.Push(TransitionNode(Board.turn , self ,startingPoint, validMove  ,captured = captured , castleQ = targetRook , firstMove= self.firstMove ,  pot =Board.pot))   
                         targetRook.column += 3
                         
@@ -145,15 +145,15 @@ class King(Piece):
                 return tempResult 
     
     def CastleCheck(self) :
-        #print("1")
+        
         if self.castle :
-           # print("2")
+           
             if self.color not in  Board.Check() :
                 result = [] 
                 startingPoint = copy.deepcopy( [self.row , self.column])
-                #print("5")
+                
                 if (Board.blackQueensideCastle and self.color == "black") or (Board.whiteQueensideCastle and self.color == "white") :
-                     #print("salam")
+                  
                      if Board.getPieceOnGivenSquare(self.castleHousesQ[0][0] , self.castleHousesQ[0][1]) == None and  Board.getPieceOnGivenSquare(self.castleHousesQ[1][0] , self.castleHousesQ[1][1]) == None and Board.getPieceOnGivenSquare(self.castleHousesQ[2][0] , self.castleHousesQ[2][1]) == None :
                         canCastle = True
                         for i in range(2) :
@@ -187,18 +187,8 @@ class King(Piece):
                             result.append(self.castleHousesK[1])
                             self.canKcastle = True
                         
-                print(result)
+               
                 return result           
                     
             
    
-    def Checkmate(self):
-        if self.check and Board.turn != self.color :
-            font = pygame.font.Font("freesansbold.ttf" , 80)
-            Board.SwitchTurn
-            Board.screen.blit(font.render((Board.turn + ' Won'), True, Board.turn), Board.startingPoint)
-            pygame.display.flip()
-            Board.run = False   
-            time.sleep(3)
-            Board.won = Board.turn
-

@@ -124,17 +124,34 @@ class Piece:
     def KillOpponent(self, opPiece) :
         for validMove in self.validMoves :
                 if validMove == [opPiece.row , opPiece.column] :
+                    
+                    if opPiece.tag == "rook":
+                        #Board.undo.Push(TransitionNode(Board.turn , opPiece ,[opP], validMove ,captured = captured ,firstMove= opPiece.firstMove , pot =Board.pot))   
+                        
+                        if opPiece.color == "white" and Board.whiteKingsideCastle and opPiece == Board.rookWR  :
+                            Board.whiteKingsideCastle = False 
+                            
+                        elif opPiece.color == "white" and Board.whiteQueensideCastle and opPiece == Board.rookWL :
+                            Board.whiteQueensideCastle = False
+                            
+                        elif opPiece.color == "black" and Board.blackKingsideCastle and opPiece == Board.rookBR :
+                            Board.blackKingsideCastle = False 
+                            
+                        elif opPiece.color == "black" and Board.blackQueensideCastle and opPiece == Board.rookBL :
+                            Board.blackQueensideCastle = False
                   
                     Board.Remove(opPiece) 
                     fr = copy.deepcopy(self.FileRank([self.row , self.column]))
-                    #print(fr)
+                  
                     self.Move([opPiece.row , opPiece.column] , captured = opPiece ) 
                     Board.saveLog (self  , self.FileRank(validMove) , captured=  True  , lastFR = fr )
                     
                     self.selected = False 
                     
                     Board.Check()
-                    #Board.SwitchTurn()
+                    
+                    
+                 
 
     def CheckValidMoves(self , tempValidMoves) :
         #tempValidMoves.append([1,4])

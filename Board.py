@@ -228,22 +228,24 @@ class Board:
         return [int(row),int(col)]
 
     def selectPiece(piece) :
-          #print("notagn")
+          
           for tPiece in Board.pieces :
                 tPiece.selected = False  
           piece.selected = True 
           Board.selectedPiece = piece   
                 
     def SwitchTurn():
+        
         Board.timer = time.time()
+        
         if Board.turn == "white" :
-            #print("1")
+         
             Board.turn = "black"
-        else :
-            #print("2")
+        else :   
             Board.turn = "white"
+            
         Board.selectedPiece = None
-        #print("switched")
+  
     
     def CheckColor(kingWch , kingBch) :
         if kingWch :
@@ -253,7 +255,7 @@ class Board:
     
     def Remove(piece ) :
         
-        #Board.pieces.remove(piece) 
+       
         for i in range(len(Board.pieces)) :
             
             if Board.pieces[i] == piece :
@@ -268,7 +270,7 @@ class Board:
                 break
              
         piece.isDead = True
-        #piece.sprite = pygame.transform.scale(piece.sprite , (30,30) )
+        
           
             
 
@@ -314,7 +316,7 @@ class Board:
                 return file + str(rank)
     
     def Undo() :
-        if not Board.undo.IsEmpty() and Board.undo.stackArray != [''] :
+        if not Board.undo.IsEmpty() and Board.undo.stackArray != ['']:
 
             node = Board.undo.Pop()
             print("node" , node)
@@ -344,26 +346,49 @@ class Board:
                     
                 
                 
-            elif node.movedPiece.tag == "rook" :
-                node.movedPiece.firstMove = node.firstMove
+            elif node.movedPiece.tag == "rook" or (node.captured and node.captured.tag == "rook" ):
                 
-                if node.firstMove :
-                    rook = node.movedPiece
+                if  node.movedPiece.tag == "rook" :
                     
-                    for king in Board.king :
-                       if rook.color == king.color and king.castle :
-                           print("brr")
-                           #king.castle = True           
-                           if rook == Board.rookWL :
-                               Board.whiteQueensideCastle = True
-                           elif rook == Board.rookBL :
-                               Board.blackQueensideCastle = True 
+                    node.movedPiece.firstMove = node.firstMove
+
+                    if node.firstMove :
+                        rook = node.movedPiece
+                        
+                        for king in Board.king :
+                           if rook.color == king.color and king.castle :
+                               print("brr")
+                               #king.castle = True           
+                               if rook == Board.rookWL :
+                                   Board.whiteQueensideCastle = True
+                               elif rook == Board.rookBL :
+                                   Board.blackQueensideCastle = True 
                                
-                           elif rook == Board.rookWR : 
-                               print("brrrrr")
-                               Board.whiteKingsideCastle = True
-                           elif rook == Board.rookBR :
-                               Board.blackKingsideCastle = True  
+                               elif rook == Board.rookWR : 
+                                   print("brrrrr")
+                                   Board.whiteKingsideCastle = True
+                               elif rook == Board.rookBR :
+                                   Board.blackKingsideCastle = True  
+                        
+                else :
+                    print(node.captured.firstMove , "first")
+                    if node.captured.firstMove :
+                        rook = node.captured
+                    
+                        for king in Board.king :
+                           if rook.color == king.color and king.castle :
+                               print("brr")
+                               #king.castle = True           
+                               if rook == Board.rookWL :
+                                   Board.whiteQueensideCastle = True
+                               elif rook == Board.rookBL :
+                                   Board.blackQueensideCastle = True 
+                               
+                               elif rook == Board.rookWR : 
+                                   print("brrrrr")
+                                   Board.whiteKingsideCastle = True
+                               elif rook == Board.rookBR :
+                                   Board.blackKingsideCastle = True  
                                
 
                         
