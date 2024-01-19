@@ -100,6 +100,7 @@ class King(Piece):
                     
     def Draw(self) :
         if not self.isDead :
+            print(self.check)
             if self.check :
                 position = Board.getPoistionOnGivenSquare(self.row , self.column)      
                 pygame.draw.rect(Board.screen , "red", pygame.Rect(position[0] , position[1] , Board.sideOfTheSquare , Board.sideOfTheSquare))

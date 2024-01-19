@@ -241,7 +241,7 @@ def Reset():
     Board.undoLog = Stack()
     Board.redoLog = Stack()
     Board.timer = time.time()
-
+    Board.king = [king_B , king_W]
     
 def DrawPieces():      
     for piece in Board.pieces : 
@@ -344,8 +344,7 @@ def DrawDead() :
         
 def DrawPromotionMenu() :
     
-    
-   
+
     if Board.pawnPro.color == "white" :
         position = Board.getPoistionOnGivenSquare(1 , -1 )
         pygame.draw.rect(Board.screen,(80, 84, 143), pygame.Rect( position[0] ,position[1] ,1 * Board.sideOfTheSquare , 4 * Board.sideOfTheSquare ) )
@@ -548,8 +547,7 @@ while Board.run :
                 Reset()
                 
         if event.type == pygame.MOUSEBUTTONDOWN and not Board.won :
-             #print(pygame.mouse.get_pos[0]) 
-            # (x,y) = 
+           
              rowCol = Board.getRowColOnGivenPosition(pygame.mouse.get_pos()[0] , pygame.mouse.get_pos()[1] )
              piece = Board.getPieceOnGivenSquare(rowCol[0] , rowCol[1])
              
@@ -561,25 +559,27 @@ while Board.run :
                      gi = copy.deepcopy(targetPiece.MovementSelection())
                      if rowCol in gi :
                            targetPiece.MovementSelection()
-                           targetPiece.Move(rowCol)  
+                           targetPiece.Move(rowCol)
+                           
                            print(Board.Check() , "check1")
                            Board.saveLog(targetPiece , targetPiece.FileRank(rowCol) ) 
                            print(Board.Check() , "check2")
+                           
                            if Board.pop :
                                Board.log.pop()
                                Board.undoLog.Pop()
                                Board.PrintLog()
                                Board.pop = False
+                               
              elif piece == None and Board.pawnPro :
                  targetPiece = Board.selectedPiece 
-                 
                  Promotion()
            
              elif not piece.selected and Board.turn == piece.color : 
-                print("beep")
+               
                 Board.selectPiece(piece)                
                 piece.MovementSelection()
-                print("piiece" , piece.validMoves)
+             
                 
              elif not piece.selected and Board.turn != piece.color :  
                   targetPiece = Board.selectedPiece   

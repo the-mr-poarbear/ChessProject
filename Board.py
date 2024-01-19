@@ -8,6 +8,7 @@ class Board:
     logTxt = ""
     won = ""
     i = 0
+    
     startingPoint = [554,138]
     sideOfTheSquare = 101.87
     board = pygame.image.load("ChessProject\Board\APossant5.png")
@@ -46,14 +47,17 @@ class Board:
     
     whiteQueensideCastle = True
     blackQueensideCastle = True
+    
     rookBL = None
     rookBR = None
     rookWL = None
     rookWR = None 
+    
     undo = Stack()
     redo = Stack()
     undoLog = Stack()
     redoLog = Stack()
+    
     def __init__(self) :
         
         pass
@@ -69,16 +73,11 @@ class Board:
         if temp :
             color = Board.Check()[0]
         
-            
-        print("color" , color)
         
-        print(color , "color")
         if color != None and color != piece.color :
             check = True 
         else:
-            check = False 
-        print("check" , check) 
-        print("color" , color)
+            check = False   
         
         if not Board.pot :   
             checkmateCol = Board.CheckMate()
@@ -86,9 +85,7 @@ class Board:
                checkmate = True    
             else :
                checkmate = False 
-            print(checkmate)
-            
-        print("pottt" , Board.pot)
+       
         if piece.tag != "pawn" :
             
             if Board.pot :
@@ -158,12 +155,14 @@ class Board:
                         Board.log.append("1-0") 
                     else :
                         Board.log.append("0-1") 
+                        
         Board.undoLog.Push(Board.log[len(Board.log)-1]) 
         Board.PrintLog() 
         
             
     def PrintLog() :
         Board.logTxt = ""
+        
         num = 1
         j = -1
         for i in range (len(Board.log)) :
@@ -171,8 +170,7 @@ class Board:
             if not (Board.log[i] and (Board.log[i][0] == "U" or ( Board.log[i][0] == "R" and len(Board.log[i]) >= 4 and Board.log[i][3] == "o"))) :
                 
                 j+=1
-                
-                
+
                 num += 1/2
                 if j%2 == 0 :
                     print( str(int(num)) + ".")
@@ -197,8 +195,7 @@ class Board:
     def getPieceOnGivenSquare( row , column) :     
 
         for piece in Board.pieces :            
-            #print(piece.row , row)
-            #print(piece.column , column)
+            
             if piece.row == row and piece.column == column :
                 return piece
         return None 
@@ -230,7 +227,8 @@ class Board:
     def selectPiece(piece) :
           
           for tPiece in Board.pieces :
-                tPiece.selected = False  
+                tPiece.selected = False 
+                
           piece.selected = True 
           Board.selectedPiece = piece   
                 
@@ -254,12 +252,11 @@ class Board:
             return "black" 
     
     def Remove(piece ) :
-        
-       
+
         for i in range(len(Board.pieces)) :
             
             if Board.pieces[i] == piece :
-                print("hi")
+
                 Board.pieces.pop(i)
                 if piece.color == "white" :
                      Board.whiteSideDead.append(piece)
@@ -319,12 +316,15 @@ class Board:
         if not Board.undo.IsEmpty() and Board.undo.stackArray != ['']:
 
             node = Board.undo.Pop()
-            print("node" , node)
+            
             node.movedPiece.row = node.startingPoint[0]
             node.movedPiece.column = node.startingPoint[1]
+            
             Board.pot = node.pot
+            
             Board.won = None
             Board.pawnPro = None
+            
             if node.movedPiece.tag == "pawn"  :
                 
             
@@ -357,54 +357,50 @@ class Board:
                         
                         for king in Board.king :
                            if rook.color == king.color and king.castle :
-                               print("brr")
-                               #king.castle = True           
+                                    
                                if rook == Board.rookWL :
                                    Board.whiteQueensideCastle = True
                                elif rook == Board.rookBL :
                                    Board.blackQueensideCastle = True 
                                
-                               elif rook == Board.rookWR : 
-                                   print("brrrrr")
+                               elif rook == Board.rookWR :    
                                    Board.whiteKingsideCastle = True
                                elif rook == Board.rookBR :
                                    Board.blackKingsideCastle = True  
                         
                 else :
-                    print(node.captured.firstMove , "first")
+                   
                     if node.captured.firstMove :
                         rook = node.captured
                     
                         for king in Board.king :
                            if rook.color == king.color and king.castle :
-                               print("brr")
-                               #king.castle = True           
+                                     
                                if rook == Board.rookWL :
                                    Board.whiteQueensideCastle = True
                                elif rook == Board.rookBL :
                                    Board.blackQueensideCastle = True 
                                
                                elif rook == Board.rookWR : 
-                                   print("brrrrr")
                                    Board.whiteKingsideCastle = True
                                elif rook == Board.rookBR :
                                    Board.blackKingsideCastle = True  
                                
-
-                        
+             
                     
             elif node.movedPiece.tag == "king" :
                  
                  node.movedPiece.firstMove = node.firstMove 
                  node.movedPiece.castle = node.firstMove  #ya its right!.. frist move
+                 
                  if node.firstMove :
-                     if node.movedPiece.color == "white" :
+                     if node.movedPiece.color == "white" : 
                          if Board.rookWR.firstMove and [Board.rookWR.row , Board.rookWR.column] == [8 , 8] :
                             Board.whiteKingsideCastle = True  
                          if Board.rookWL.firstMove and [Board.rookWL.row , Board.rookWL.column] == [8 , 1] :
                             Board.whiteQueensideCastle = True  
-                     else :
-                         
+                            
+                     else :    
                          if Board.rookBR.firstMove and [Board.rookBR.row , Board.rookBR.column] == [1 , 8] :
                             Board.blackKingsideCastle = True  
                          if Board.rookBL.firstMove and [Board.rookBL.row , Board.rookBL.column] == [1 , 1] :
@@ -413,11 +409,11 @@ class Board:
                        
 
                  if node.castleQ :
-                     #node.movedPiece.
                      if node.castleQ.color == "white" :                     
                          Board.rookWL.column -= 3
                          Board.rookWL.firstMove = True
                          Board.whiteQueensideCastle = True
+                         
                          if Board.rookWR.firstMove and [Board.rookWR.row , Board.rookWR.column] == [8 , 8] :
                             Board.whiteKingsideCastle = True   
                              
@@ -426,20 +422,22 @@ class Board:
                          Board.rookBL.column -= 3
                          Board.rookBL.firstMove = True
                          Board.blackQueensideCastle = True
+                         
                          if Board.rookBR.firstMove and [Board.rookBR.row , Board.rookBR.column] == [1 , 8] :
                             Board.blackKingsideCastle = True  
+                      
                             
                      node.movedPiece.canQcastle = True
                      node.movedPiece.castle = True
                      
                  elif node.castleK :
                      if node.castleK.color == "white" :
-                         print("all in")
                          Board.rookWR.column += 2
                          Board.rookWR.firstMove = True
                          Board.whiteKingsideCastle = True
                          if Board.rookWL.firstMove and [Board.rookWL.row , Board.rookWL.column] == [8 , 1] :
-                            Board.whiteQueensideCastle = True  
+                            Board.whiteQueensideCastle = True 
+                            
                      else :
                          Board.rookBR.column += 2
                          Board.rookBR.firstMove = True
@@ -458,19 +456,19 @@ class Board:
                     Board.blackSideDead.remove(node.captured)
                     
                 Board.pieces.append(node.captured)
-                #node.captured.sprite = pygame.transform.scale(node.captured.sprite , (60,60))
+                
             
 
                 
             tempLog = Board.undoLog.Pop()
             Board.redoLog.Push(tempLog)
             Board.log.append("Undo " +tempLog)
-            print("hubji")
-            print(Board.undoLog.IsEmpty())
+            
             Board.redo.Push(node)
             Board.Check()
             Board.SwitchTurn()
             Board.PrintLog()
+            
             #dont forget to return the dead and add it to Board.pieces otherwise theyl stay ghosty
 
     def Redo() :
